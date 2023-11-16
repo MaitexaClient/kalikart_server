@@ -45,8 +45,8 @@ exports.login = async (req, res) => {
           userName: oldUser.username,
           userRole: oldUser.role,
         },
-        // process.env.TOKEN_SECRET_KEY,
-        'secret_this_should_longer',
+        process.env.TOKEN_SECRET_KEY,
+        // 'secret_this_should_longer',
         {
           expiresIn: '1h',
         }

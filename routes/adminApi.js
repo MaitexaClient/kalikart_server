@@ -5,10 +5,11 @@ const registrationController = require('../controllers/registrationController');
 const adminController = require('../controllers/adminController');
 
 // ===============================================================================
-// ------------------------------Common API--------------------------------------------
+// ------------------------------Admin--------------------------------------------
 // ===============================================================================
-
-// -----------------------------Common Login--------------------------------------
-router.post('/login', loginController.login);
+//----------------------------Add city--------------------------------------------
+router.post('/add-city', adminController.addCity);
+router.get('/view-city', adminController.viewCity);
+router.get('/view-city/:id', adminController.viewSingleCity);
 
 module.exports = router;

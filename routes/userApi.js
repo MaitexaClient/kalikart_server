@@ -5,10 +5,9 @@ const registrationController = require('../controllers/registrationController');
 const adminController = require('../controllers/adminController');
 
 // ===============================================================================
-// ------------------------------Common API--------------------------------------------
+// ------------------------------User---------------------------------------------
 // ===============================================================================
-
-// -----------------------------Common Login--------------------------------------
-router.post('/login', loginController.login);
+// -----------------------------User Registration---------------------------------
+router.post('/register', registrationController.register);
 
 module.exports = router;
