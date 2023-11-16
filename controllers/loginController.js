@@ -6,6 +6,8 @@ require('dotenv').config();
 // LoginRouter.post('/', async (req, res) => {
 exports.login = async (req, res) => {
   try {
+    console.log(req.body.username);
+    console.log(req.body.password);
     if (req.body.username && req.body.password) {
       const oldUser = await loginSchema.findOne({
         username: req.body.username,
@@ -14,11 +16,11 @@ exports.login = async (req, res) => {
         return res.status(400).json({
           Success: false,
           Error: true,
-          Message: 'Register First',
+          Message: 'You have to Register First',
         });
       }
 
-      const isPasswordCorrect = bcrypt.compare(
+      const isPasswordCorrect = await bcrypt.compare(
         req.body.password,
         oldUser.password
       );
@@ -29,13 +31,22 @@ exports.login = async (req, res) => {
           Message: 'Password Incorrect',
         });
       }
+      // ------------------------------
+      // return res.json({
+      //   Success: true,
+      //   Error: false,
+      //   Message: 'Success',
+      // });
+      // ------------------------------
+
       const token = jwt.sign(
         {
           userId: oldUser._id,
           userName: oldUser.username,
           userRole: oldUser.role,
         },
-        process.env.TOKEN_SECRET_KEY,
+        // process.env.TOKEN_SECRET_KEY,
+        'secret_this_should_longer',
         {
           expiresIn: '1h',
         }
@@ -61,6 +72,7 @@ exports.login = async (req, res) => {
     return res.status(500).json({
       Success: false,
       Error: true,
+      ErrorMessage: error,
       Message: 'Internal Server Error',
     });
   }
