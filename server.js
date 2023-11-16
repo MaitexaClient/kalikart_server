@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 
-
 const mongoose = require('mongoose');
 const router = require('./routes/api');
 
@@ -10,9 +9,9 @@ mongoose
     'mongodb+srv://sanjaykvc:eF3XUrcG1Gyxm3gg@kalicart.ctpcffz.mongodb.net/Kalicart',
     {
       useNewUrlParser: true,
-      //   useUnifiedTopology: true,
+      useUnifiedTopology: true,
     }
-  ) 
+  )
   .then(() => {
     console.log('Database Connected Successfully');
   })
