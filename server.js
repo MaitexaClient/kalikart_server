@@ -23,7 +23,6 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// for development & production don't use this line app.use("/api", apiRouter); , this is just demo login contoller
 app.use('/api', router);
 
 app.get('/', (req, res) => {
