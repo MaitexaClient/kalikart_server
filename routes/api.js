@@ -4,8 +4,8 @@ const loginController = require('../controllers/loginController');
 const registrationController = require('../controllers/registrationController');
 
 // -----------------------------Login---------------------------------------
-router.get('/login', loginController.login);
+router.post('/login', loginController.login);
 // -----------------------------Register---------------------------------------
-router.get('/register', registrationController.register);
+router.post('/register', registrationController.register);
 
 module.exports = router;
