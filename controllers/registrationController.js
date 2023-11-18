@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const registerDB = require('../models/registerSchema');
-const shopRegisterDB = require('../models/shopRegisterSchema');
+const shopsDB = require('../models/shopRegisterSchema');
 const loginDB = require('../models/loginSchema');
 const citiesData = require('../models/citiesSchema');
 
@@ -95,7 +95,7 @@ exports.shopRegister = async (req, res) => {
         Message: 'Username already exist, Please Log In',
       });
     }
-    const oldPhone = await shopRegisterDB.findOne({ phone: req.body.phone });
+    const oldPhone = await shopsDB.findOne({ phone: req.body.phone });
     if (oldPhone) {
       return res.status(400).json({
         Success: false,
@@ -103,7 +103,7 @@ exports.shopRegister = async (req, res) => {
         Message: 'Phone number already exist',
       });
     }
-    const oldEmail = await shopRegisterDB.findOne({ email: req.body.email });
+    const oldEmail = await shopsDB.findOne({ email: req.body.email });
     if (oldEmail) {
       return res.status(400).json({
         Success: false,
@@ -127,9 +127,10 @@ exports.shopRegister = async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       address: req.body.address,
-      image: req.file.path,
+      // image: req.file.path,
+      image: req.files.map((file) => file.path),
     };
-    const result2 = await shopRegisterDB(reg).save();
+    const result2 = await shopsDB(reg).save();
 
     if (result2) {
       return res.json({

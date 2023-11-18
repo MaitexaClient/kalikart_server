@@ -4,6 +4,7 @@ const multer = require('multer');
 const loginController = require('../controllers/loginController');
 const registrationController = require('../controllers/registrationController');
 const adminController = require('../controllers/adminController');
+const shopsController = require('../controllers/shopsController');
 
 // ===========================image upload=====================================
 const cloudinary = require('cloudinary').v2;
@@ -29,10 +30,21 @@ const upload = multer({ storage: storage });
 
 router.post(
   '/register-shop',
-  upload.single('image'),
+  upload.array('image', 5),
   registrationController.shopRegister
 );
+// -----------------------------Shop Profile---------------------------------
+router.get('/shop-profile/:id', shopsController.shopProfile);
+// -----------------------------Product--------------------------------------
 
-
+router.post(
+  '/add-product',
+  upload.array('image', 5),
+  shopsController.addProduct
+);
+router.get('/view-products', shopsController.viewProducts);
+router.get('/view-product/:id', shopsController.viewSingleProduct);
+router.put('/update-product/:id', shopsController.updateProduct);
+router.delete('/delete-product/:id', shopsController.deleteProduct);
 
 module.exports = router;
