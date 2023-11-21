@@ -7,14 +7,22 @@ const citiesData = require('../models/citiesSchema');
 // =====================user registration==================================
 exports.register = async (req, res) => {
   try {
-    const oldUser = await loginDB.findOne({ username: req.body.username });
-    if (oldUser) {
+    const oldEmail = await registerDB.findOne({ email: req.body.email });
+    if (oldEmail) {
       return res.status(400).json({
         Success: false,
         Error: true,
-        Message: 'Username already exist, Please Log In',
+        Message: 'Email already exist, Please Log In',
       });
     }
+    // const oldUser = await loginDB.findOne({ username: req.body.username });
+    // if (oldUser) {
+    //   return res.status(400).json({
+    //     Success: false,
+    //     Error: true,
+    //     Message: 'Username already exist, Please Log In',
+    //   });
+    // }
     const oldPhone = await registerDB.findOne({ phone: req.body.phone });
     if (oldPhone) {
       return res.status(400).json({
@@ -23,18 +31,12 @@ exports.register = async (req, res) => {
         Message: 'Phone already exist',
       });
     }
-    const oldEmail = await registerDB.findOne({ email: req.body.email });
-    if (oldEmail) {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Email already exist',
-      });
-    }
     console.log(req.body.password);
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
     let log = {
-      username: req.body.username,
+      // username: req.body.username,
+      email: req.body.email,
+
       password: hashedPassword,
       role: 2,
     };
@@ -42,7 +44,7 @@ exports.register = async (req, res) => {
     let reg = {
       login_id: result._id,
       name: req.body.name,
-      email: req.body.email,
+      // email: req.body.email,
       phone: req.body.phone,
     };
     const result2 = await registerDB(reg).save();
@@ -85,16 +87,24 @@ exports.shopRegister = async (req, res) => {
         Message: 'Shop name already exist',
       });
     }
-    const oldShopUsername = await loginDB.findOne({
-      username: req.body.username,
-    });
-    if (oldShopUsername) {
+    const oldEmail = await shopsDB.findOne({ email: req.body.email });
+    if (oldEmail) {
       return res.status(400).json({
         Success: false,
         Error: true,
-        Message: 'Username already exist, Please Log In',
+        Message: 'Email already exist,Please Log In',
       });
     }
+    // const oldShopUsername = await loginDB.findOne({
+    //   username: req.body.username,
+    // });
+    // if (oldShopUsername) {
+    //   return res.status(400).json({
+    //     Success: false,
+    //     Error: true,
+    //     Message: 'Username already exist, Please Log In',
+    //   });
+    // }
     const oldPhone = await shopsDB.findOne({ phone: req.body.phone });
     if (oldPhone) {
       return res.status(400).json({
@@ -103,17 +113,12 @@ exports.shopRegister = async (req, res) => {
         Message: 'Phone number already exist',
       });
     }
-    const oldEmail = await shopsDB.findOne({ email: req.body.email });
-    if (oldEmail) {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Email already exist',
-      });
-    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
     let log = {
-      username: req.body.username,
+      // username: req.body.username,
+      email: req.body.email,
+
       password: hashedPassword,
       role: 2,
     };
@@ -124,7 +129,7 @@ exports.shopRegister = async (req, res) => {
       login_id: result._id,
       city_id: req.body.city_id,
       shop_name: req.body.shop_name,
-      email: req.body.email,
+      // email: req.body.email,
       phone: req.body.phone,
       address: req.body.address,
       // image: req.file.path,

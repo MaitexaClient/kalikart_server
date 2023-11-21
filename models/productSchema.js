@@ -15,7 +15,7 @@ const productsSchema = new mongoose.Schema({
   price: { type: String, required: true },
   available_quantity: { type: String, required: true, default: 1 },
   offer: { type: Number, required: true },
-  image: { type: [String], required: true },
+  image: { type: [String], require: true },
   description: { type: String, required: true },
 });
 

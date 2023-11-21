@@ -6,11 +6,12 @@ require('dotenv').config();
 // LoginRouter.post('/', async (req, res) => {
 exports.login = async (req, res) => {
   try {
-    console.log(req.body.username);
+    console.log(req.body.email);
     console.log(req.body.password);
-    if (req.body.username && req.body.password) {
+    if (req.body.email && req.body.password) {
+      // if (req.body.username && req.body.password) {
       const oldUser = await loginSchema.findOne({
-        username: req.body.username,
+        email: req.body.email,
       });
       if (!oldUser) {
         return res.status(400).json({
@@ -31,18 +32,11 @@ exports.login = async (req, res) => {
           Message: 'Password Incorrect',
         });
       }
-      // ------------------------------
-      // return res.json({
-      //   Success: true,
-      //   Error: false,
-      //   Message: 'Success',
-      // });
-      // ------------------------------
-
       const token = jwt.sign(
         {
           userId: oldUser._id,
-          userName: oldUser.username,
+          email: oldUser.email,
+          // userName: oldUser.username,
           userRole: oldUser.role,
         },
         process.env.TOKEN_SECRET_KEY,
@@ -58,7 +52,8 @@ exports.login = async (req, res) => {
         token: token,
         expiresIn: 3600,
         loginId: oldUser._id,
-        userName: oldUser.username,
+        email: oldUser.email,
+        // userName: oldUser.username,
         userRole: oldUser.role,
       });
     } else {

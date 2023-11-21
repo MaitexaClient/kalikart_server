@@ -44,10 +44,10 @@ exports.shopProfile = async (req, res) => {
             $first: '$shop_name',
           },
           email: {
-            $first: '$phone',
+            $first: '$results.email',
           },
           phone: {
-            $first: '$shop_name',
+            $first: '$phone',
           },
           address: {
             $first: '$address',
@@ -55,9 +55,9 @@ exports.shopProfile = async (req, res) => {
           image: {
             $first: '$image',
           },
-          username: {
-            $first: '$results.username',
-          },
+          // username: {
+          //   $first: '$results.username',
+          // },
           password: {
             $first: '$results.password',
           },
@@ -142,6 +142,29 @@ exports.addProduct = async (req, res) => {
 
 exports.viewProducts = async (req, res) => {
   try {
+    const Data = await productsData.find();
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Cities fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed getting single city',
+      });
+    }
+  } catch (error) {}
+};
+
+// --------------------------Get filtered product by category--------------------------------
+exports.filterProducts = async (req, res) => {
+  try {
+
+    // const Data = await productsData.find();
     const Data = await productsData.find();
     if (Data) {
       return res.status(200).json({
