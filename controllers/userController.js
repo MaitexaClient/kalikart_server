@@ -2,7 +2,9 @@ const { default: mongoose } = require('mongoose');
 const RegisterData = require('../models/registerSchema');
 const cartData = require('../models/cartSchema');
 const wishlistData = require('../models/wishlistSchema');
+const productsData = require('../models/productSchema');
 
+// --------------------------User profile
 exports.userProfile = async (req, res) => {
   //   console.log(req.params.id);
   try {
@@ -83,8 +85,233 @@ exports.userProfile = async (req, res) => {
     });
   }
 };
+// --------------------------Update user profile--------------------------------
 
-// -------------------------- Cart --------------------------------
+exports.updateUserProf = async (req, res) => {
+  try {
+    const previousData = await RegisterData.findOne({
+      login_id: req.params.id,
+    });
+    console.log(previousData.image);
+    var User = {
+      login_id: previousData.login_id,
+      name: req.body ? req.body.shop_name : previousData.shop_name,
+      phone: req.body ? req.body.phone : previousData.phone,
+      image:
+        req.files && req.files.length > 0
+          ? req.files.map((file) => file.path)
+          : previousData.image,
+    };
+
+    const Data = await RegisterData.updateOne(
+      { login_id: req.params.id },
+      { $set: User }
+    );
+
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'User profile updated successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed while updating user profile',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+    });
+  }
+};
+
+// ------------------------- Product ------------------------------------
+// --------------------------Get all product--------------------------------
+
+exports.viewProducts = async (req, res) => {
+  try {
+    const Data = await productsData.find();
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Cities fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed getting single city',
+      });
+    }
+  } catch (error) {}
+};
+
+// --------------------------Get filtered product by category--------------------------------
+exports.filterProducts = async (req, res) => {
+  try {
+    const id = req.params.id;
+    // const Data = await productsData.find();
+    const Data = await productsData.find({ category_id: id });
+    if (Data.length > 0) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Products filtered successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed filtering products',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------Get filtered product by sub category--------------------------------
+exports.filterSubProducts = async (req, res) => {
+  try {
+    const sub_category = req.params.subcategory;
+    console.log(sub_category);
+    // const Data = await productsData.find();
+    const Data = await productsData.find({ sub_category: sub_category });
+    if (Data.length > 0) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Products filtered successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed filtering products',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------Get filtered product by price range--------------------------------
+exports.filterPriceProducts = async (req, res) => {
+  try {
+    const start_range = req.params.start;
+    const end_range = req.params.end;
+    console.log(start_range);
+    console.log(start_range);
+    // const Data = await productsData.find();
+    const Data = await productsData.find({
+      price: { $gte: start_range, $lte: end_range },
+    });
+    if (Data.length > 0) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'No products in that range',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------Get filtered product by search key--------------------------------
+exports.searchProducts = async (req, res) => {
+  try {
+    const searchKey = req.params.searchKey;
+    console.log(searchKey);
+    // const Data = await productsData.find();
+    const Data = await productsData.find({
+      // product_name: { searchKey },
+      // $or: [
+      //   { product_name: { $regex: searchKey, $options: 'i' } },
+      //   { sub_category: { $regex: searchKey, $options: 'i' } },
+      // ],
+
+      product_name: { $regex: searchKey, $options: 'i' },
+    });
+    if (Data.length > 0) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'No products found',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------Get single product--------------------------------
+
+exports.viewSingleProduct = async (req, res) => {
+  try {
+    const Data = await productsData.findOne({ _id: req.params.id });
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Single City fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed getting single city',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      errorMessage: error,
+      Message: 'Something went wrong',
+    });
+  }
+};
+// -------------------------- Cart --------------------------------------
 // -------------------------- Add to cart --------------------------------
 
 exports.addToCart = async (req, res) => {

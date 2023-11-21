@@ -95,6 +95,55 @@ exports.shopProfile = async (req, res) => {
   }
 };
 
+// --------------------------Update shops profile--------------------------------
+
+exports.updateShopProf = async (req, res) => {
+  try {
+    const previousData = await shopRegisterData.findOne({
+      login_id: req.params.id,
+    });
+
+    var Shop = {
+      login_id: previousData.login_id,
+      city_id: req.body ? req.body.city_id : previousData.city_id,
+      shop_name: req.body ? req.body.shop_name : previousData.shop_name,
+      phone: req.body ? req.body.phone : previousData.phone,
+      address: req.body ? req.body.address : previousData.address,
+      latitude: req.body ? req.body.latitude : previousData.latitude,
+      longitude: req.body ? req.body.longitude : previousData.longitude,
+      image:
+        req.files && req.files.length > 0
+          ? req.files.map((file) => file.path)
+          : previousData.image,
+    };
+
+    const Data = await shopRegisterData.updateOne(
+      { login_id: req.params.id },
+      { $set: Shop }
+    );
+
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Shop profile updated successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed while updating shop profile',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+    });
+  }
+};
 // --------------------------Add product--------------------------------
 
 exports.addProduct = async (req, res) => {
@@ -134,79 +183,6 @@ exports.addProduct = async (req, res) => {
       Error: true,
       Message: 'Failed adding Product ',
       ErrorMessage: error.message,
-    });
-  }
-};
-
-// --------------------------Get all product--------------------------------
-
-exports.viewProducts = async (req, res) => {
-  try {
-    const Data = await productsData.find();
-    if (Data) {
-      return res.status(200).json({
-        Success: true,
-        Error: false,
-        data: Data,
-        Message: 'Cities fetched successfully',
-      });
-    } else {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Failed getting single city',
-      });
-    }
-  } catch (error) {}
-};
-
-// --------------------------Get filtered product by category--------------------------------
-exports.filterProducts = async (req, res) => {
-  try {
-
-    // const Data = await productsData.find();
-    const Data = await productsData.find();
-    if (Data) {
-      return res.status(200).json({
-        Success: true,
-        Error: false,
-        data: Data,
-        Message: 'Cities fetched successfully',
-      });
-    } else {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Failed getting single city',
-      });
-    }
-  } catch (error) {}
-};
-// --------------------------Get single product--------------------------------
-
-exports.viewSingleProduct = async (req, res) => {
-  try {
-    const Data = await productsData.findOne({ _id: req.params.id });
-    if (Data) {
-      return res.status(200).json({
-        Success: true,
-        Error: false,
-        data: Data,
-        Message: 'Single City fetched successfully',
-      });
-    } else {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Failed getting single city',
-      });
-    }
-  } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      errorMessage: error,
-      Message: 'Something went wrong',
     });
   }
 };

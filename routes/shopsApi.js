@@ -27,7 +27,6 @@ const upload = multer({ storage: storage });
 // ------------------------------Shops--------------------------------------------
 // ===============================================================================
 // -----------------------------Shop Registration---------------------------------
-
 router.post(
   '/register-shop',
   upload.array('image', 5),
@@ -35,16 +34,22 @@ router.post(
 );
 // -----------------------------Shop Profile---------------------------------
 router.get('/shop-profile/:id', shopsController.shopProfile);
-// -----------------------------Product--------------------------------------
+// -----------------------------Update Shop Profile---------------------------------
+router.put(
+  '/shop-profile-update/:id',
+  upload.array('image', 5),
+  shopsController.updateShopProf
+);
 
+// -----------------------------Products--------------------------------------
 router.post(
   '/add-product',
   upload.array('image', 5),
   shopsController.addProduct
 );
-router.get('/view-products', shopsController.viewProducts);
-router.get('/view-product/:id', shopsController.viewSingleProduct);
+
 router.put('/update-product/:id', shopsController.updateProduct);
+
 router.delete('/delete-product/:id', shopsController.deleteProduct);
 
 module.exports = router;

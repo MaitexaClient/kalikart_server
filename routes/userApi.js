@@ -5,6 +5,26 @@ const registrationController = require('../controllers/registrationController');
 const adminController = require('../controllers/adminController');
 const userController = require('../controllers/userController');
 
+// ===========================image upload=====================================
+const multer = require('multer');
+
+const cloudinary = require('cloudinary').v2;
+
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'Kalicart',
+  },
+});
+const upload = multer({ storage: storage });
+
 // ===============================================================================
 // ------------------------------User---------------------------------------------
 // ===============================================================================
@@ -13,6 +33,13 @@ router.post('/register', registrationController.register);
 
 // -----------------------------User Profile---------------------------------
 router.get('/user-profile/:id', userController.userProfile);
+// -----------------------------Update User Profile---------------------------------
+router.put(
+  '/user-profile-update/:id',
+  upload.array('image', 5),
+  userController.updateUserProf
+);
+
 // -----------------------------Add to Cart---------------------------------
 
 router.post('/add-cart/:user_id/:prod_id', userController.addToCart);
