@@ -92,7 +92,7 @@ exports.updateUserProf = async (req, res) => {
     const previousData = await RegisterData.findOne({
       login_id: req.params.id,
     });
-    console.log(previousData.image);
+    // console.log(previousData.image);
     var User = {
       login_id: previousData.login_id,
       name: req.body ? req.body.shop_name : previousData.shop_name,
@@ -127,6 +127,7 @@ exports.updateUserProf = async (req, res) => {
       Success: false,
       Error: true,
       Message: 'Internal server error',
+      Error: error.message,
     });
   }
 };
@@ -142,13 +143,13 @@ exports.viewProducts = async (req, res) => {
         Success: true,
         Error: false,
         data: Data,
-        Message: 'Cities fetched successfully',
+        Message: 'Products fetched successfully',
       });
     } else {
       return res.status(400).json({
         Success: false,
         Error: true,
-        Message: 'Failed getting single city',
+        Message: 'Failed getting Products ',
       });
     }
   } catch (error) {}

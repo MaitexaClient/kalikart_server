@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 const loginController = require('../controllers/loginController');
 const registrationController = require('../controllers/registrationController');
 const adminController = require('../controllers/adminController');
 const shopsController = require('../controllers/shopsController');
 
 // ===========================image upload=====================================
+const multer = require('multer');
+
 const cloudinary = require('cloudinary').v2;
 
 const { CloudinaryStorage } = require('multer-storage-cloudinary');

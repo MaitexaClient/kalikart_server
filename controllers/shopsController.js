@@ -6,7 +6,7 @@ const shopRegisterData = require('../models/shopRegisterSchema');
 // --------------------------Shops profile--------------------------------
 
 exports.shopProfile = async (req, res) => {
-  console.log(req.params.id);
+  // console.log(req.params.id);
   try {
     const id = req.params.id;
 
@@ -137,10 +137,11 @@ exports.updateShopProf = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       Success: false,
       Error: true,
       Message: 'Internal server error',
+      ErrorMessage: ERROR.message,
     });
   }
 };
@@ -162,7 +163,7 @@ exports.addProduct = async (req, res) => {
       description: req.body.description,
     };
     const Data = await productsData(Product).save();
-    console.log(Data);
+    // console.log(Data);
     if (Data) {
       return res.status(201).json({
         Success: true,
