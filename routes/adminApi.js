@@ -62,7 +62,7 @@ router.post(
 );
 router.post(
   '/add-banner-video',
-  uploadVideo.array('video', 3),
+  uploadVideo.array('video', 1),
   adminController.addBannerVideo
 );
 //----------------------------View all banner--------------------------------------------
@@ -78,4 +78,13 @@ router.get('/view-banners/images', adminController.viewImageBanners);
 module.exports = router;
 
 // --------------------------------Ad credits-------------------------------------------
-router.put('/banner-credit/:banner_id/:login_id', adminController.adCredit);
+router.post('/banner-credit/details', adminController.addCreditPointDetails);
+router.get(
+  '/banner-credit/details-view',
+  adminController.viewCreditPointDetails
+);
+router.put(
+  '/banner-credit/details-update',
+  adminController.updateCreditPointDetails
+);
+router.put('/banner-credit/:banner_id/:login_id', adminController.addAdCredit);

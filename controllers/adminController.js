@@ -6,6 +6,7 @@ const sizeOf = require('image-size');
 const { getVideoDurationInSeconds } = require('get-video-duration');
 const shopRegisterData = require('../models/shopRegisterSchema');
 const RegisterData = require('../models/registerSchema');
+const creditPointData = require('../models/creditPointSchema');
 // ============================ CITY===========================
 // --------------------------Add city ----------------------------------
 
@@ -218,8 +219,8 @@ exports.viewShops = async (req, res) => {
 // ============================Banner===========================
 // --------------------------Add Banner image----------------------------------
 exports.addBannerImage = async (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
+  // console.log(req.body);
+  // console.log(req.files);
 
   try {
     const bannerImages = req.files && req.files.length > 0 ? req.files : [];
@@ -236,7 +237,7 @@ exports.addBannerImage = async (req, res) => {
           const dimensions = sizeOf(response.data);
           const width = dimensions.width;
           const height = dimensions.height;
-          console.log(`width:${width},height:${height}`);
+          // console.log(`width:${width},height:${height}`);
 
           // if (width === 970 && height === 250) {
           if (width === 740 && height === 592) {
@@ -279,8 +280,8 @@ exports.addBannerImage = async (req, res) => {
 // --------------------------Add Banner video----------------------------------
 
 exports.addBannerVideo = async (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
+  // console.log(req.body);
+  // console.log(req.files);
   try {
     const Banner = {
       title: req.body.title,
@@ -289,7 +290,7 @@ exports.addBannerVideo = async (req, res) => {
         req.files && req.files.length > 0
           ? req.files.map((file) => file.path)
           : null,
-      videoLength: null, // Initialize videoLength as null
+      videoLength: null,
     };
 
     // Assuming only one video is uploaded
@@ -420,7 +421,6 @@ exports.viewVideoBanners = async (req, res) => {
 };
 
 // --------------------------Get Image banner----------------------------------
-
 exports.viewImageBanners = async (req, res) => {
   try {
     const Data = await bannerData.find({
@@ -449,16 +449,135 @@ exports.viewImageBanners = async (req, res) => {
     });
   }
 };
+// ----------------------------Add Ad Credit point and price------------------------------------------
+exports.addCreditPointDetails = async (req, res) => {
+  try {
+    const credit_point = req.body.credit_point;
+    const price = req.body.price;
+    const price_per_credit_point = price / credit_point;
 
-// ----------------------------Ad Credit point------------------------------------------
-exports.adCredit = async (req, res) => {
+    const Credits = {
+      credit_point: req.body.credit_point,
+      price: req.body.price,
+      price_per_credit_point: price_per_credit_point,
+    };
+    const Data = await creditPointData(Credits).save();
+    if (Data) {
+      return res.status(201).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Credit Point Details added successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed adding Credit Point Details ',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal Server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// ----------------------------View Ad Credit point and price------------------------------------------
+exports.viewCreditPointDetails = async (req, res) => {
+  try {
+    const Data = await creditPointData.find();
+    if (Data) {
+      return res.status(201).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Credit Point Details fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed fetching Credit Point Details ',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal Server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// ----------------------------Update Ad Credit point and price------------------------------------------
+exports.updateCreditPointDetails = async (req, res) => {
+  try {
+    const objectId = '655f00abb09f06cc2d5b7aaf';
+    const previousData = await creditPointData.findOne({
+      _id: objectId,
+    });
+    var Credits = {
+      credit_point: req.body.credit_point
+        ? req.body.credit_point
+        : previousData.credit_point,
+      price: req.body.price ? req.body.price : previousData.price,
+
+      price_per_credit_point:
+        (req.body.price ? req.body.price : previousData.price) /
+        (req.body.credit_point
+          ? req.body.credit_point
+          : previousData.credit_point),
+    };
+    // console.log(
+    //   'Calculated price_per_credit_point:',
+    //   Credits.price_per_credit_point
+    // );
+    const Data = await creditPointData.updateOne(
+      { _id: objectId },
+      { $set: Credits }
+    );
+
+    if (Data) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Credit Point Data updated successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed while updating Credit Point Data',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      Error: error.message,
+    });
+  }
+};
+
+// ----------------------------Add User Ad Credit point------------------------------------------
+exports.addAdCredit = async (req, res) => {
   try {
     const banner_id = req.params.banner_id;
     const login_id = req.params.login_id;
-    // console.log(banner_id);
+
+    const objectId = '655f00abb09f06cc2d5b7aaf';
+    const credit_Data = await creditPointData.findOne({ _id: objectId });
+    const price_per_credit_point = credit_Data.price_per_credit_point;
+    // console.log('Priceperpoint:' + price_per_credit_point);
 
     const banner_Data = await bannerData.findOne({ _id: banner_id });
     const videoLength = banner_Data.videoLength;
+
     let creditPoint;
     if (videoLength <= 30) {
       creditPoint = 10;
@@ -466,20 +585,33 @@ exports.adCredit = async (req, res) => {
     if (videoLength > 30) {
       creditPoint = 20;
     }
-    console.log(creditPoint);
+    // console.log('Video_CreditPoint:' + creditPoint);
+    const existingUserCreditPrice = await RegisterData.findOne({
+      login_id: login_id,
+    });
+    const userCreditPrice = existingUserCreditPrice.credit_points_price;
+    // console.log('User_Price:' + userCreditPrice);
+
+    const finalCreditPrice =
+      price_per_credit_point * creditPoint + userCreditPrice;
+    // console.log('FinalPrice:' + finalCreditPrice);
 
     const updatedUserData = await RegisterData.updateOne(
       { login_id: login_id },
       // { $set: { credit_points: creditPoint } }
       { $inc: { credit_points: creditPoint } }
     );
-
-    if (updatedUserData) {
+    const updatedUserCreditPrice = await RegisterData.updateOne(
+      { login_id: login_id },
+      { $set: { credit_points_price: finalCreditPrice } }
+    );
+    if (updatedUserData && updatedUserCreditPrice) {
       return res.status(200).json({
         Success: true,
         Error: false,
         VideoLength: videoLength,
         CreditPoints: creditPoint,
+        creditPrice: finalCreditPrice,
         Message: 'User ad credit point added successfully',
       });
     } else {
@@ -490,6 +622,7 @@ exports.adCredit = async (req, res) => {
       });
     }
   } catch (error) {
+    // console.log(error);
     return res.status(500).json({
       Success: false,
       Error: true,

@@ -8,6 +8,7 @@ const registerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: String, required: true },
   credit_points: { type: Number, required: true, default: 0 },
+  credit_points_price: { type: Number, require: true, default: 0 },
   image: { type: [String], require: true },
   // email: { type: String, required: true },
 });
