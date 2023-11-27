@@ -17,7 +17,7 @@ cloudinary.config({
   api_key: process.env.CLOUD_KEY,
   api_secret: process.env.CLOUD_SECRET,
 });
-const storage = new CloudinaryStorage({
+const storage = new CloudinaryStorage({ 
   cloudinary: cloudinary,
   params: {
     folder: 'Kalicart',

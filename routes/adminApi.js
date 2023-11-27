@@ -42,7 +42,11 @@ router.get('/view-city/:id', adminController.viewSingleCity);
 
 //----------------------------Add category--------------------------------------------
 
-router.post('/add-category', adminController.addCategory);
+router.post(
+  '/add-category',
+  uploadImage.array('image', 1),
+  adminController.addCategory
+);
 router.get('/view-category', adminController.viewCategory);
 router.get('/view-category/:id', adminController.viewSingleCategory);
 

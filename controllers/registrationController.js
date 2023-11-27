@@ -77,7 +77,7 @@ exports.register = async (req, res) => {
 
 exports.shopRegister = async (req, res) => {
   try {
-    const oldShopName = await loginDB.findOne({
+    const oldShopName = await shopsDB.findOne({
       shop_name: req.body.shop_name,
     });
     if (oldShopName) {

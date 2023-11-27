@@ -7,6 +7,7 @@ const { getVideoDurationInSeconds } = require('get-video-duration');
 const shopRegisterData = require('../models/shopRegisterSchema');
 const RegisterData = require('../models/registerSchema');
 const creditPointData = require('../models/creditPointSchema');
+
 // ============================ CITY===========================
 // --------------------------Add city ----------------------------------
 
@@ -105,6 +106,7 @@ exports.addCategory = async (req, res) => {
   try {
     const Category = {
       category: req.body.category,
+      image: req.files ? req.files.map((file) => file.path) : null,
     };
     const Data = await productCategoryData(Category).save();
     if (Data) {
