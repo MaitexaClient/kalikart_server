@@ -44,11 +44,11 @@ exports.userProfile = async (req, res) => {
             $first: '$phone',
           },
           email: {
-            $first: '$email',
+            $first: '$results.email',
           },
-          username: {
-            $first: '$results.username',
-          },
+          // username: {
+          //   $first: '$results.username',
+          // },
           password: {
             $first: '$results.password',
           },
@@ -57,7 +57,7 @@ exports.userProfile = async (req, res) => {
 
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(id),
+          login_id: new mongoose.Types.ObjectId(id),
         },
       },
     ]);
