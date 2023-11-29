@@ -21,6 +21,10 @@ router.get(
   userController.filterSubProducts
 );
 router.get(
+  '/filter-product_cat_sub/:category',
+  userController.filterCatSubProducts
+);
+router.get(
   '/filter-product_price/:start/:end',
   userController.filterPriceProducts
 );

@@ -214,6 +214,39 @@ exports.filterSubProducts = async (req, res) => {
     });
   }
 };
+// --------------------------Get filtered product by sub category under category--------------------------------
+exports.filterCatSubProducts = async (req, res) => {
+  try {
+    const category = req.params.category;
+    console.log(category);
+    // const Data = await productsData.find();
+    // const Data = await productsData.find({ category_id: category });
+    const Data = await productsData.distinct('sub_category', {
+      category_id: category,
+    });
+    if (Data.length > 0) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Data,
+        Message: 'Products filtered successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed filtering products',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
 // --------------------------Get filtered product by price range--------------------------------
 exports.filterPriceProducts = async (req, res) => {
   try {
