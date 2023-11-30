@@ -447,6 +447,15 @@ exports.viewCart = async (req, res) => {
           quantity: {
             $first: '$quantity',
           },
+          image: {
+            $first: {
+              $cond: {
+                if: { $ne: ['$result.image', null] },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
         },
       },
       {
@@ -475,6 +484,7 @@ exports.viewCart = async (req, res) => {
               price: '$price',
               quantity: '$quantity',
               subtotal: '$subtotal',
+              image: '$image',
             },
           },
         },
