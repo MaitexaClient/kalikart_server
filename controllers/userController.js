@@ -656,6 +656,15 @@ exports.viewWishlist = async (req, res) => {
           price: {
             $first: '$result.price',
           },
+          image: {
+            $first: {
+              $cond: {
+                if: { $ne: ['$result.image', null] },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
         },
       },
 
