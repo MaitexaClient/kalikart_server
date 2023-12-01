@@ -43,6 +43,9 @@ exports.userProfile = async (req, res) => {
           phone: {
             $first: '$phone',
           },
+          image: {
+            $first: '$image',
+          },
           email: {
             $first: '$results.email',
           },
