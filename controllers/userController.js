@@ -581,7 +581,35 @@ exports.decrementQuantity = async (req, res) => {
     })
     .catch((err) => console.log('error while getting data'));
 };
-
+// -------------------------- Remove from cart --------------------------------
+exports.deleteFromCart = async (req, res) => {
+  try {
+    cartData
+      .deleteOne({ _id: req.params.id })
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          error: false,
+          message: 'product deletion from cart successful',
+        });
+      })
+      .catch((error) => {
+        return res.status(400).json({
+          success: false,
+          error: true,
+          message: 'product deletion from cart failed',
+          ErrorMessage: error.message,
+        });
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
 // -------------------------- Wishlist --------------------------------
 // -------------------------- Add to wishlist --------------------------------
 exports.addToWishlist = async (req, res) => {
@@ -706,6 +734,37 @@ exports.viewWishlist = async (req, res) => {
       Success: false,
       Error: true,
       Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+
+// -------------------------- Remove from wishlist --------------------------------
+
+exports.deleteFromWishlist = async (req, res) => {
+  try {
+    wishlistData
+      .deleteOne({ _id: req.params.id })
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          error: false,
+          message: 'product deletion from wishlist successful',
+        });
+      })
+      .catch((error) => {
+        return res.status(400).json({
+          success: false,
+          error: true,
+          message: 'product deletion from wishlist failed',
+          ErrorMessage: error.message,
+        });
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: 'Internal server error',
       ErrorMessage: error.message,
     });
   }
