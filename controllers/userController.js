@@ -435,6 +435,9 @@ exports.viewCart = async (req, res) => {
           login_id: {
             $first: '$login_id',
           },
+          product_id: {
+            $first: '$product_id',
+          },
           product_name: {
             $first: '$result.product_name',
           },
@@ -481,6 +484,7 @@ exports.viewCart = async (req, res) => {
             $push: {
               _id: '$_id',
               login_id: '$login_id',
+              product_id: '$product_id',
               product_name: '$product_name',
               sub_category: '$sub_category',
               offer: '$offer',
@@ -684,6 +688,9 @@ exports.viewWishlist = async (req, res) => {
           _id: '$_id',
           login_id: {
             $first: '$login_id',
+          },
+          product_id: {
+            $first: '$product_id',
           },
           product_name: {
             $first: '$result.product_name',
