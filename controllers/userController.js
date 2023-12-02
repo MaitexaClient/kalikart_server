@@ -497,11 +497,11 @@ exports.viewCart = async (req, res) => {
         },
       },
     ]);
-    if (cartProducts.length > 0) {
+    if (cartProducts.length) {
       return res.status(200).json({
         Success: true,
         Error: false,
-        data: cartProducts,
+        data: cartProducts.length > 0 ? cartProducts : [],
         Message: 'Product fetched from cart successfully',
       });
     } else {
@@ -722,11 +722,11 @@ exports.viewWishlist = async (req, res) => {
         },
       },
     ]);
-    if (wishlistProducts.length > 0) {
+    if (wishlistProducts) {
       return res.status(200).json({
         Success: true,
         Error: false,
-        data: wishlistProducts,
+        data: wishlistProducts.length > 0 ? wishlistProducts : [],
         Message: 'Product fetched from wishlist successfully',
       });
     } else {
