@@ -98,7 +98,7 @@ exports.updateUserProf = async (req, res) => {
     // console.log(previousData.image);
     var User = {
       login_id: previousData.login_id,
-      name: req.body ? req.body.shop_name : previousData.shop_name,
+      name: req.body ? req.body.name : previousData.name,
       phone: req.body ? req.body.phone : previousData.phone,
       image:
         req.files && req.files.length > 0
