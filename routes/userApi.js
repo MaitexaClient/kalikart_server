@@ -39,7 +39,15 @@ router.put(
   upload.array('image', 5),
   userController.updateUserProf
 );
+// -----------------------------User add address---------------------------------
 
+router.post('/user-address/:id', userController.addAddress);
+// -----------------------------User set primary address---------------------------------
+
+router.put('/user-address/:id/:count', userController.setPrimaryAddress);
+// -----------------------------User get all address---------------------------------
+
+router.get('/user-all-address/:id', userController.getUserAddress);
 // -----------------------------Add to Cart---------------------------------
 
 router.post('/add-cart/:user_id/:prod_id', userController.addToCart);

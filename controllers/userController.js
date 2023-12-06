@@ -3,8 +3,9 @@ const RegisterData = require('../models/registerSchema');
 const cartData = require('../models/cartSchema');
 const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
+const addressData = require('../models/addressSchema');
 
-// --------------------------User profile
+// --------------------------User profile------------------------------------
 exports.userProfile = async (req, res) => {
   //   console.log(req.params.id);
   try {
@@ -91,11 +92,13 @@ exports.userProfile = async (req, res) => {
 // --------------------------Update user profile--------------------------------
 
 exports.updateUserProf = async (req, res) => {
+  console.log(req.body);
   try {
+    var loginID = req.params.id;
     const previousData = await RegisterData.findOne({
-      login_id: req.params.id,
+      login_id: loginID,
     });
-    // console.log(previousData.image);
+    // ---------------------------user profile update - image & address-------------------------------
     var User = {
       login_id: previousData.login_id,
       name: req.body ? req.body.name : previousData.name,
@@ -107,16 +110,17 @@ exports.updateUserProf = async (req, res) => {
     };
 
     const Data = await RegisterData.updateOne(
-      { login_id: req.params.id },
+      { login_id: loginID },
       { $set: User }
     );
+    console.log('Data', Data);
 
     if (Data) {
       return res.status(200).json({
         Success: true,
         Error: false,
         data: Data,
-        Message: 'User profile updated successfully',
+        Message: 'User profile updated successfully ',
       });
     } else {
       return res.status(400).json({
@@ -126,7 +130,7 @@ exports.updateUserProf = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       Success: false,
       Error: true,
       Message: 'Internal server error',
@@ -135,6 +139,130 @@ exports.updateUserProf = async (req, res) => {
   }
 };
 
+// -------------------------- User address --------------------------------
+// --------------------------add new address user--------------------------------
+exports.addAddress = async (req, res) => {
+  try {
+    // const exAddress = await addressData.findOne({ login_id: req.params.id });
+    const exAddress = await addressData
+      .findOne({ login_id: req.params.id })
+      .sort({ _id: -1 })
+      .limit(1);
+    const Address = {
+      login_id: req.params.id,
+      addressCount: exAddress ? exAddress.addressCount + 1 : 1,
+      name: req.body.name,
+      phone: req.body.phone,
+      address: req.body.address,
+      addressType: exAddress ? '' : 'primary',
+      pincode: req.body.pincode,
+      state: req.body.state,
+      city: req.body.city,
+      landmark: req.body.landmark,
+    };
+    const Data = await addressData(Address).save();
+    // console.log(Data);
+    if (Data) {
+      return res.status(201).json({
+        Success: true,
+        Error: false,
+        data: Data.length > 0 ? Data : [],
+        Message: 'Address added successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed adding Address ',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Failed adding Product ',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------set primary address user--------------------------------
+// await addressData.updateOne(
+//   { login_id: loginId, addressType: 'primary' },
+//   { $unset: { addressType: '' } }
+// );
+// const updatedAddress = await addressData.findOneAndUpdate(
+//   { login_id: loginId, addressCount: parseInt(addressCount) },
+//   { $set: { addressType: 'primary' } },
+//   { new: true }
+// );
+exports.setPrimaryAddress = async (req, res) => {
+  try {
+    const setPrimary = await addressData.findOneAndUpdate(
+      { login_id: req.params.id, addressCount: parseInt(req.params.count) },
+      { $set: { addressType: 'primary' } }
+      // { new: true }
+    );
+    const unsetPrimary = await addressData.updateOne(
+      { login_id: req.params.id, addressType: 'primary' },
+      { $set: { addressType: '' } }
+    );
+    // const unsetPrimary = await addressData.updateOne(
+    //   { login_id: req.params.id, addressType: 'primary' },
+    //   { $unset: { addressType: '' } }
+    // );
+
+    if (setPrimary && unsetPrimary) {
+      return res.status(201).json({
+        Success: true,
+        Error: false,
+
+        Message: 'Primary address selected successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed selecting primary address ',
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// --------------------------get user address--------------------------------
+exports.getUserAddress = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const userAddress = await addressData.find({ login_id: id });
+    if (userAddress) {
+      res.status(200).json({
+        success: true,
+        error: false,
+        data: userAddress,
+        message: 'user address fetched successfully',
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: true,
+        message: 'user address fetching failed',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'internal server error',
+      errorMessage: error.message,
+    });
+  }
+};
 // ------------------------- Product ------------------------------------
 // --------------------------Get all product--------------------------------
 
