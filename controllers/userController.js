@@ -263,6 +263,124 @@ exports.getUserAddress = async (req, res) => {
     });
   }
 };
+// --------------------------get user primary address--------------------------------
+
+exports.getUserPrimaryAddress = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userAddress = await addressData.findOne({
+      login_id: id,
+      addressType: 'primary',
+    });
+    if (userAddress) {
+      res.status(200).json({
+        success: true,
+        error: false,
+        data: userAddress,
+        message: 'user primary address fetched successfully',
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: true,
+        message: 'user primary address fetching failed',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'internal server error',
+      errorMessage: error.message,
+    });
+  }
+};
+// --------------------------update user address--------------------------------
+exports.updateUserAddress = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const prevUserAddress = await addressData.findOne({
+      _id: id,
+    });
+    console.log(prevUserAddress);
+
+    var updatedAddress = {
+      login_id: prevUserAddress.login_id,
+      addressCount: req.body
+        ? req.body.addressCount
+        : prevUserAddress.addressCount,
+      name: req.body ? req.body.name : prevUserAddress.name,
+      phone: req.body.phone ? req.body.phone : prevUserAddress.phone,
+      address: req.body ? req.body.address : prevUserAddress.address,
+      pincode: req.body ? req.body.pincode : prevUserAddress.pincode,
+      state: req.body ? req.body.state : prevUserAddress.state,
+      city: req.body ? req.body.city : prevUserAddress.city,
+      landmark: req.body ? req.body.landmark : prevUserAddress.landmark,
+      addressType: req.body
+        ? req.body.addressType
+        : prevUserAddress.addressType,
+    };
+
+    const updatedData = await addressData.updateOne(
+      { _id: id },
+      { $set: updatedAddress }
+    );
+
+    if (updatedData) {
+      res.status(200).json({
+        success: true,
+        error: false,
+        data: updatedData,
+        message: 'user address updated successfully',
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: true,
+        message: 'user address updating failed',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'internal server error',
+      errorMessage: error.message,
+    });
+  }
+};
+
+// --------------------------delete user address--------------------------------
+
+exports.deleteUserAddress = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const userAddress = await addressData.deleteOne({ _id: id });
+    if (userAddress) {
+      res.status(200).json({
+        success: true,
+        error: false,
+        data: userAddress,
+        message: 'user address deleted successfully',
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: true,
+        message: 'user address deletion failed',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'internal server error',
+      errorMessage: error.message,
+    });
+  }
+};
 // ------------------------- Product ------------------------------------
 // --------------------------Get all product--------------------------------
 

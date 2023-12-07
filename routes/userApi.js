@@ -48,6 +48,16 @@ router.put('/user-address/:id/:count', userController.setPrimaryAddress);
 // -----------------------------User get all address---------------------------------
 
 router.get('/user-all-address/:id', userController.getUserAddress);
+
+// -----------------------------User get primary address---------------------------------
+router.get('/user-primary-address/:id', userController.getUserPrimaryAddress);
+
+// -----------------------------User update address---------------------------------
+router.put('/user-address-update/:id', userController.updateUserAddress);
+
+// -----------------------------User delete address---------------------------------
+router.delete('/user-del-address/:id', userController.deleteUserAddress);
+
 // -----------------------------Add to Cart---------------------------------
 
 router.post('/add-cart/:user_id/:prod_id', userController.addToCart);
