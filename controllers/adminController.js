@@ -362,6 +362,58 @@ exports.addBannerVideo = async (req, res) => {
     });
   }
 };
+// --------------------------Add thumbnail for video banner----------------------------------
+exports.addBannerVideoThumbnail = async (req, res) => {
+  try {
+    const bannerId = req.params.id;
+    console.log(bannerId);
+
+    // Find the existing banner data by ID
+    const existingBanner = await bannerData.findById(bannerId);
+
+    // Check if the banner data with the given ID exists
+    if (!existingBanner) {
+      return res.status(404).json({
+        Success: false,
+        Error: true,
+        Message: 'Banner data not found',
+      });
+    }
+
+    // Update the existing banner data with the new thumbnail path
+    const exThumbnail = existingBanner.thumbnail;
+    const thumbnail = req.file.path ? req.file.path : exThumbnail;
+
+    // Save the updated banner data
+    const updatedBanner = await bannerData.updateOne(
+      { _id: bannerId },
+      { $set: { thumbnail: thumbnail } }
+    );
+
+    if (updatedBanner) {
+      return res.status(201).json({
+        Success: true,
+        Error: false,
+        data: updatedBanner,
+        Message: 'Video thumbnail added successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed adding video thumbnail',
+      });
+    }
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal Server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
 
 // --------------------------Get all banner----------------------------------
 

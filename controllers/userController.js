@@ -5,6 +5,15 @@ const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 // --------------------------User profile------------------------------------
 exports.userProfile = async (req, res) => {
   //   console.log(req.params.id);
@@ -404,6 +413,70 @@ exports.viewProducts = async (req, res) => {
   } catch (error) {}
 };
 
+// --------------------------Get shuffled products--------------------------------
+exports.viewShuffledProducts = async (req, res) => {
+  try {
+    const data = await productsData.find();
+
+    if (data && data.length > 0) {
+      const shuffledData = shuffleArray(data);
+
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: shuffledData,
+        Message: 'Products fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed getting Products ',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal Server Error',
+    });
+  }
+};
+// --------------------------Get trending products--------------------------------
+exports.viewTrendingProducts = async (req, res) => {
+  try {
+    const data = await productsData.find();
+
+    if (data && data.length > 0) {
+      const shuffledData = shuffleArray(data);
+
+      const slicedData = shuffledData.slice(0, 10);
+
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: slicedData,
+        Count: slicedData.length,
+        TotalCount: data.length,
+        Message: 'Products fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Failed getting Products ',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal Server Error',
+    });
+  }
+};
 // --------------------------Get filtered product by category--------------------------------
 exports.filterProducts = async (req, res) => {
   try {
@@ -594,6 +667,7 @@ exports.viewSingleProduct = async (req, res) => {
     });
   }
 };
+
 // -------------------------- Cart --------------------------------------
 // -------------------------- Add to cart --------------------------------
 

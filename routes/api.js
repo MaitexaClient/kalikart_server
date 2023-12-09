@@ -14,6 +14,8 @@ router.post('/login', loginController.login);
 
 // -----------------------------Products--------------------------------------
 router.get('/view-products', userController.viewProducts);
+router.get('/view-products/shuffled', userController.viewShuffledProducts);
+router.get('/view-products/trending', userController.viewTrendingProducts);
 router.get('/view-product/:id', userController.viewSingleProduct);
 router.get('/filter-product_cat/:id', userController.filterProducts);
 router.get(

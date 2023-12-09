@@ -4,8 +4,8 @@ const bannerSchema = new mongoose.Schema({
   description: { type: String, require: true },
   image: { type: [String], require: true },
   video: { type: [String], require: true },
+  thumbnail: { type: String, require: true,default:'' },
   videoLength: { type: Number, require: true },
-
 });
 
 var bannerData = mongoose.model('banner_tb', bannerSchema);

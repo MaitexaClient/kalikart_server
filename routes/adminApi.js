@@ -58,16 +58,27 @@ router.get('/view-shops', adminController.viewShops);
 // ==================================================================================
 
 // ===============================Banner===================================================
-//----------------------------Add banner--------------------------------------------
+//----------------------------Add image banner--------------------------------------------
 router.post(
   '/add-banner-image',
   uploadImage.array('image', 5),
   adminController.addBannerImage
 );
+//----------------------------Add video banner--------------------------------------------
+
 router.post(
   '/add-banner-video',
   uploadVideo.array('video', 1),
+
   adminController.addBannerVideo
+);
+//----------------------------Add thumbnail for video banner--------------------------------------------
+
+router.post(
+  '/add-thumbnail-video-banner/:id',
+  uploadImage.single('thumbnail'),
+
+  adminController.addBannerVideoThumbnail
 );
 //----------------------------View all banner--------------------------------------------
 
