@@ -14,7 +14,7 @@ function shuffleArray(array) {
   return array;
 }
 
-// --------------------------User profile------------------------------------
+// --------------------------User profile----------------------------------------
 exports.userProfile = async (req, res) => {
   //   console.log(req.params.id);
   try {
@@ -98,7 +98,7 @@ exports.userProfile = async (req, res) => {
     });
   }
 };
-// --------------------------Update user profile--------------------------------
+// --------------------------Update user profile---------------------------------
 
 exports.updateUserProf = async (req, res) => {
   console.log(req.body);
@@ -148,8 +148,8 @@ exports.updateUserProf = async (req, res) => {
   }
 };
 
-// -------------------------- User address --------------------------------
-// --------------------------add new address user--------------------------------
+// -------------------------- User address ---------------------------------------
+// --------------------------add new address user---------------------------------
 exports.addAddress = async (req, res) => {
   try {
     // const exAddress = await addressData.findOne({ login_id: req.params.id });
@@ -194,7 +194,7 @@ exports.addAddress = async (req, res) => {
     });
   }
 };
-// --------------------------set primary address user--------------------------------
+// --------------------------set primary address user------------------------------
 // await addressData.updateOne(
 //   { login_id: loginId, addressType: 'primary' },
 //   { $unset: { addressType: '' } }
@@ -243,7 +243,7 @@ exports.setPrimaryAddress = async (req, res) => {
     });
   }
 };
-// --------------------------get user address--------------------------------
+// --------------------------get user address--------------------------------------
 exports.getUserAddress = async (req, res) => {
   try {
     const id = req.params.id;
@@ -272,7 +272,7 @@ exports.getUserAddress = async (req, res) => {
     });
   }
 };
-// --------------------------get user primary address--------------------------------
+// --------------------------get user primary address-------------------------------
 
 exports.getUserPrimaryAddress = async (req, res) => {
   try {
@@ -304,7 +304,7 @@ exports.getUserPrimaryAddress = async (req, res) => {
     });
   }
 };
-// --------------------------update user address--------------------------------
+// --------------------------update user address-------------------------------------
 exports.updateUserAddress = async (req, res) => {
   const id = req.params.id;
 
@@ -360,7 +360,7 @@ exports.updateUserAddress = async (req, res) => {
   }
 };
 
-// --------------------------delete user address--------------------------------
+// --------------------------delete user address--------------------------------------
 
 exports.deleteUserAddress = async (req, res) => {
   try {
@@ -390,8 +390,8 @@ exports.deleteUserAddress = async (req, res) => {
     });
   }
 };
-// ------------------------- Product ------------------------------------
-// --------------------------Get all product--------------------------------
+// ------------------------------ Product --------------------------------------------
+// ----------------------------Get all product----------------------------------------
 
 exports.viewProducts = async (req, res) => {
   try {
@@ -413,7 +413,7 @@ exports.viewProducts = async (req, res) => {
   } catch (error) {}
 };
 
-// --------------------------Get shuffled products--------------------------------
+// --------------------------Get shuffled products-----------------------------------
 exports.viewShuffledProducts = async (req, res) => {
   try {
     const data = await productsData.find();
@@ -443,7 +443,7 @@ exports.viewShuffledProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get trending products--------------------------------
+// --------------------------Get trending products-----------------------------------
 exports.viewTrendingProducts = async (req, res) => {
   try {
     const data = await productsData.find();
@@ -477,7 +477,7 @@ exports.viewTrendingProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get filtered product by category--------------------------------
+// --------------------------Get filtered product by category------------------------
 exports.filterProducts = async (req, res) => {
   try {
     const id = req.params.id;
@@ -506,7 +506,7 @@ exports.filterProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get filtered product by sub category--------------------------------
+// --------------------------Get filtered product by sub category--------------------
 exports.filterSubProducts = async (req, res) => {
   try {
     const sub_category = req.params.subcategory;
@@ -536,7 +536,7 @@ exports.filterSubProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get filtered product by sub category under category--------------------------------
+// --------------------------Get filtered product by sub category under category-----
 exports.filterCatSubProducts = async (req, res) => {
   try {
     const category = req.params.category;
@@ -569,7 +569,7 @@ exports.filterCatSubProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get filtered product by price range--------------------------------
+// --------------------------Get filtered product by price range---------------------
 exports.filterPriceProducts = async (req, res) => {
   try {
     const start_range = req.params.start;
@@ -602,7 +602,7 @@ exports.filterPriceProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get filtered product by search key--------------------------------
+// --------------------------Get filtered product by search key----------------------
 exports.searchProducts = async (req, res) => {
   try {
     const searchKey = req.params.searchKey;
@@ -639,7 +639,7 @@ exports.searchProducts = async (req, res) => {
     });
   }
 };
-// --------------------------Get single product--------------------------------
+// --------------------------Get single product--------------------------------------
 
 exports.viewSingleProduct = async (req, res) => {
   try {
@@ -668,8 +668,8 @@ exports.viewSingleProduct = async (req, res) => {
   }
 };
 
-// -------------------------- Cart --------------------------------------
-// -------------------------- Add to cart --------------------------------
+// -------------------------- Cart ---------------------------------------------------
+// -------------------------- Add to cart --------------------------------------------
 
 exports.addToCart = async (req, res) => {
   try {
@@ -728,7 +728,7 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// -------------------------- Cart view --------------------------------
+// -------------------------- Cart view ----------------------------------------------
 
 exports.viewCart = async (req, res) => {
   try {
@@ -905,7 +905,7 @@ exports.decrementQuantity = async (req, res) => {
     })
     .catch((err) => console.log('error while getting data'));
 };
-// -------------------------- Remove from cart --------------------------------
+// -------------------------- Remove from cart ----------------------------------------
 exports.deleteFromCart = async (req, res) => {
   try {
     cartData
@@ -934,8 +934,8 @@ exports.deleteFromCart = async (req, res) => {
     });
   }
 };
-// -------------------------- Wishlist --------------------------------
-// -------------------------- Add to wishlist --------------------------------
+// -------------------------- Wishlist ------------------------------------------------
+// -------------------------- Add to wishlist -----------------------------------------
 exports.addToWishlist = async (req, res) => {
   try {
     const login_id = req.params.user_id;
@@ -982,7 +982,7 @@ exports.addToWishlist = async (req, res) => {
   }
 };
 
-// -------------------------- View wishlist --------------------------------
+// -------------------------- View wishlist ------------------------------------------
 
 exports.viewWishlist = async (req, res) => {
   try {
@@ -1066,7 +1066,7 @@ exports.viewWishlist = async (req, res) => {
   }
 };
 
-// -------------------------- Remove from wishlist --------------------------------
+// -------------------------- Remove from wishlist -----------------------------------
 
 exports.deleteFromWishlist = async (req, res) => {
   try {
