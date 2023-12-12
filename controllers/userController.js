@@ -4,8 +4,9 @@ const cartData = require('../models/cartSchema');
 const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
+const orderData = require('../models/ordersSchema');
+const checkoutData = require('../models/checkoutSchema');
 
-// Fisher-Yates shuffle algorithm
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1092,6 +1093,184 @@ exports.deleteFromWishlist = async (req, res) => {
       success: false,
       error: true,
       message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+
+// -------------------------- User Checkout ------------------------------------------
+exports.checkOut = async (req, res) => {
+  try {
+    const dataToCopy = await cartData.find({ login_id: req.params.user_id });
+    if (dataToCopy.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'No data found for the specified user ID' });
+    }
+
+    const dataWithOrderStatus = dataToCopy.map((item) => ({
+      ...item.toObject(),
+      order_status: 'pending',
+    }));
+
+    await checkoutData.insertMany(dataWithOrderStatus);
+    // await cartData.deleteMany({ login_id: req.params.user_id });
+    res.status(200).json({
+      message: 'Checkout data added successfully!',
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// -------------------------- User checkout status update completed ------------------
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    // console.log(req.params.status);
+    // console.log(typeof req.params.status);
+    const currentDate = new Date();
+    if (req.params.status === '1') {
+      await checkoutData.updateMany(
+        { login_id: req.params.user_id },
+        {
+          $set: { order_status: 'completed', order_date: currentDate },
+        }
+      );
+
+      res
+        .status(200)
+        .json({ message: 'Order status completed updated successfully!' });
+      const dataToCopy = await checkoutData.find({
+        login_id: req.params.user_id,
+      });
+      if (dataToCopy.length === 0) {
+        return res
+          .status(404)
+          .json({ message: 'No data found for the specified user ID' });
+      }
+
+      const dataWithOrderStatus = dataToCopy.map((item) => ({
+        ...item.toObject(),
+      }));
+
+      await orderData.insertMany(dataWithOrderStatus);
+      await checkoutData.deleteMany({ login_id: req.params.user_id });
+    } else {
+      await checkoutData.updateMany(
+        { login_id: req.params.user_id },
+        {
+          $set: { order_status: 'cancelled', order_date: currentDate },
+        }
+      );
+      res
+        .status(200)
+        .json({ message: 'Order status cancelled updated successfully!' });
+      const dataToCopy = await checkoutData.find({
+        login_id: req.params.user_id,
+      });
+      if (dataToCopy.length === 0) {
+        return res
+          .status(404)
+          .json({ message: 'No data found for the specified user ID' });
+      }
+
+      const dataWithOrderStatus = dataToCopy.map((item) => ({
+        ...item.toObject(),
+      }));
+
+      await orderData.insertMany(dataWithOrderStatus);
+      await checkoutData.deleteMany({ login_id: req.params.user_id });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// -------------------------- User view checkout products ------------------
+exports.viewCheckout = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    console.log(user_id);
+
+    const checkoutProducts = await checkoutData.aggregate([
+      {
+        $lookup: {
+          from: 'products_tbs',
+          localField: 'product_id',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $unwind: {
+          path: '$result',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          login_id: {
+            $first: '$login_id',
+          },
+          product_id: {
+            $first: '$product_id',
+          },
+          product_name: {
+            $first: '$result.product_name',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$result.offer',
+          },
+          description: {
+            $first: '$result.description',
+          },
+          price: {
+            $first: '$result.price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$result.image', null],
+                },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
+        },
+      },
+    ]);
+    if (checkoutProducts) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: checkoutProducts.length > 0 ? checkoutProducts : [],
+        Message: 'Product fetched from checkout successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Product fetching from checkout failed',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
       ErrorMessage: error.message,
     });
   }

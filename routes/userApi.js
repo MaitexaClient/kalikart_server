@@ -68,5 +68,11 @@ router.delete('/delete-cart/:id', userController.deleteFromCart);
 router.post('/add-wishlist/:user_id/:prod_id', userController.addToWishlist);
 router.get('/view-wishlist/:user_id', userController.viewWishlist);
 router.delete('/delete-wishlist/:id', userController.deleteFromWishlist);
+router.post('/add-orders/:user_id', userController.checkOut);
+router.post(
+  '/update-orders-status/:user_id/:status',
+  userController.updateOrderStatus
+);
+router.get('/view-checkout', userController.viewCheckout);
 
 module.exports = router;
