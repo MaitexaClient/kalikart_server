@@ -62,12 +62,15 @@ router.delete('/user-del-address/:id', userController.deleteUserAddress);
 
 router.post('/add-cart/:user_id/:prod_id', userController.addToCart);
 router.get('/view-cart/:user_id', userController.viewCart);
-router.put('/increment-cart/:id', userController.incrementQuantity);
-router.put('/decrement-cart/:id', userController.decrementQuantity);
-router.delete('/delete-cart/:id', userController.deleteFromCart);
+router.put('/increment-cart/:user_id/:id', userController.incrementQuantity);
+router.put('/decrement-cart/:user_id/:id', userController.decrementQuantity);
+router.delete('/delete-cart/:user_id/:id', userController.deleteFromCart);
 router.post('/add-wishlist/:user_id/:prod_id', userController.addToWishlist);
 router.get('/view-wishlist/:user_id', userController.viewWishlist);
-router.delete('/delete-wishlist/:id', userController.deleteFromWishlist);
+router.delete(
+  '/delete-wishlist/:user_id/:id',
+  userController.deleteFromWishlist
+);
 router.post('/add-orders/:user_id', userController.checkOut);
 router.post(
   '/update-orders-status/:user_id/:status',

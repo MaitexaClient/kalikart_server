@@ -853,6 +853,7 @@ exports.incrementQuantity = async (req, res) => {
   cartData
     .findOne({
       _id: req.params.id,
+      login_id: req.params.user_id,
     })
     .then((data) => {
       const quantity = data.quantity;
@@ -880,6 +881,7 @@ exports.decrementQuantity = async (req, res) => {
   cartData
     .findOne({
       _id: req.params.id,
+      login_id: req.params.user_id,
     })
     .then((data) => {
       const quantity = data.quantity;
@@ -916,7 +918,7 @@ exports.decrementQuantity = async (req, res) => {
 exports.deleteFromCart = async (req, res) => {
   try {
     cartData
-      .deleteOne({ _id: req.params.id })
+      .deleteOne({ _id: req.params.id, login_id: req.params.user_id })
       .then(() => {
         return res.status(200).json({
           success: true,
@@ -1078,7 +1080,7 @@ exports.viewWishlist = async (req, res) => {
 exports.deleteFromWishlist = async (req, res) => {
   try {
     wishlistData
-      .deleteOne({ _id: req.params.id })
+      .deleteOne({ _id: req.params.id, login_id: req.params.user_id })
       .then(() => {
         return res.status(200).json({
           success: true,
