@@ -57,6 +57,12 @@ exports.userProfile = async (req, res) => {
           image: {
             $first: '$image',
           },
+          credit_points: {
+            $first: '$credit_points',
+          },
+          credit_points_price: {
+            $first: '$credit_points_price',
+          },
           email: {
             $first: '$results.email',
           },
