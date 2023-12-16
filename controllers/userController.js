@@ -5,7 +5,8 @@ const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 const orderData = require('../models/ordersSchema');
-const checkoutData = require('../models/checkOutSchema');
+// const checkoutData = require('../models/checkOutSchema');
+const checkoutData = require('../models/checkoutSchema');
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -951,6 +952,7 @@ exports.addToWishlist = async (req, res) => {
     const productId = req.params.prod_id;
 
     const existingProduct = await wishlistData.findOne({
+      login_id: login_id,
       product_id: productId,
     });
     if (!existingProduct) {
@@ -1132,70 +1134,6 @@ exports.checkOut = async (req, res) => {
   }
 };
 
-// -------------------------- User checkout status update completed ------------------
-exports.updateOrderStatus = async (req, res) => {
-  try {
-    // console.log(req.params.status);
-    // console.log(typeof req.params.status);
-    const currentDate = new Date();
-    if (req.params.status === '1') {
-      await checkoutData.updateMany(
-        { login_id: req.params.user_id },
-        {
-          $set: { order_status: 'completed', order_date: currentDate },
-        }
-      );
-
-      res
-        .status(200)
-        .json({ message: 'Order status completed updated successfully!' });
-      const dataToCopy = await checkoutData.find({
-        login_id: req.params.user_id,
-      });
-      if (dataToCopy.length === 0) {
-        return res
-          .status(404)
-          .json({ message: 'No data found for the specified user ID' });
-      }
-
-      const dataWithOrderStatus = dataToCopy.map((item) => ({
-        ...item.toObject(),
-      }));
-
-      await orderData.insertMany(dataWithOrderStatus);
-      await checkoutData.deleteMany({ login_id: req.params.user_id });
-    } else {
-      await checkoutData.updateMany(
-        { login_id: req.params.user_id },
-        {
-          $set: { order_status: 'cancelled', order_date: currentDate },
-        }
-      );
-      res
-        .status(200)
-        .json({ message: 'Order status cancelled updated successfully!' });
-      const dataToCopy = await checkoutData.find({
-        login_id: req.params.user_id,
-      });
-      if (dataToCopy.length === 0) {
-        return res
-          .status(404)
-          .json({ message: 'No data found for the specified user ID' });
-      }
-
-      const dataWithOrderStatus = dataToCopy.map((item) => ({
-        ...item.toObject(),
-      }));
-
-      await orderData.insertMany(dataWithOrderStatus);
-      await checkoutData.deleteMany({ login_id: req.params.user_id });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 // -------------------------- User view checkout products ------------------
 exports.viewCheckout = async (req, res) => {
   try {
@@ -1259,6 +1197,11 @@ exports.viewCheckout = async (req, res) => {
           },
         },
       },
+      {
+        $match: {
+          login_id: new mongoose.Types.ObjectId(user_id),
+        },
+      },
     ]);
     if (checkoutProducts) {
       return res.status(200).json({
@@ -1272,6 +1215,162 @@ exports.viewCheckout = async (req, res) => {
         Success: false,
         Error: true,
         Message: 'Product fetching from checkout failed',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+
+// -------------------------- User checkout status update completed ------------------
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    // console.log(req.params.status);
+    // console.log(typeof req.params.status);
+    const currentDate = new Date();
+    if (req.params.status === '1') {
+      await checkoutData.updateMany(
+        { login_id: req.params.user_id },
+        {
+          $set: { order_status: 'completed', order_date: currentDate },
+        }
+      );
+
+      res
+        .status(200)
+        .json({ message: 'Order status completed updated successfully!' });
+      const dataToCopy = await checkoutData.find({
+        login_id: req.params.user_id,
+      });
+      if (dataToCopy.length === 0) {
+        return res
+          .status(404)
+          .json({ message: 'No data found for the specified user ID' });
+      }
+
+      const dataWithOrderStatus = dataToCopy.map((item) => ({
+        ...item.toObject(),
+      }));
+
+      await orderData.insertMany(dataWithOrderStatus);
+      await cartData.deleteMany({ login_id: req.params.user_id });
+      await checkoutData.deleteMany({ login_id: req.params.user_id });
+    } else {
+      await checkoutData.updateMany(
+        { login_id: req.params.user_id },
+        {
+          $set: { order_status: 'cancelled', order_date: currentDate },
+        }
+      );
+      res
+        .status(200)
+        .json({ message: 'Order status cancelled updated successfully!' });
+      const dataToCopy = await checkoutData.find({
+        login_id: req.params.user_id,
+      });
+      if (dataToCopy.length === 0) {
+        return res
+          .status(404)
+          .json({ message: 'No data found for the specified user ID' });
+      }
+
+      const dataWithOrderStatus = dataToCopy.map((item) => ({
+        ...item.toObject(),
+      }));
+
+      await orderData.insertMany(dataWithOrderStatus);
+      await checkoutData.deleteMany({ login_id: req.params.user_id });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// -------------------------- User orders --------------------------------------------
+
+exports.viewOrders = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    console.log(user_id);
+
+    const Orders = await orderData.aggregate([
+      {
+        $lookup: {
+          from: 'products_tbs',
+          localField: 'product_id',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $unwind: {
+          path: '$result',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          product_name: {
+            $first: '$result.product_name',
+          },
+          login_id: {
+            $first: '$login_id',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$result.offer',
+          },
+          description: {
+            $first: '$result.description',
+          },
+          price: {
+            $first: '$result.price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$result.image', null],
+                },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          login_id: new mongoose.Types.ObjectId(user_id),
+        },
+      },
+    ]);
+    if (Orders) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        data: Orders.length > 0 ? Orders : [],
+        Message: 'Orders fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Orders fetching failed',
       });
     }
   } catch (error) {

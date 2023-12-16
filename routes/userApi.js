@@ -76,6 +76,7 @@ router.post(
   '/update-orders-status/:user_id/:status',
   userController.updateOrderStatus
 );
-router.get('/view-checkout', userController.viewCheckout);
+router.get('/view-checkout/:user_id', userController.viewCheckout);
+router.get('/view-orders/:user_id', userController.viewOrders);
 
 module.exports = router;
