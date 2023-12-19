@@ -78,5 +78,7 @@ router.post(
 );
 router.get('/view-checkout/:user_id', userController.viewCheckout);
 router.get('/view-orders/:user_id', userController.viewOrders);
+router.get('/completed-orders/:user_id', userController.filterOrdersCompleted);
+router.get('/cancelled-orders/:user_id', userController.filterOrdersCancelled);
 
 module.exports = router;

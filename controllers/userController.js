@@ -16,7 +16,7 @@ function shuffleArray(array) {
   return array;
 }
 
-// --------------------------User profile----------------------------------------
+// --------------------------User profile-----------------------------------------
 exports.userProfile = async (req, res) => {
   //   console.log(req.params.id);
   try {
@@ -106,10 +106,11 @@ exports.userProfile = async (req, res) => {
     });
   }
 };
-// --------------------------Update user profile---------------------------------
+
+// --------------------------Update user profile----------------------------------
 
 exports.updateUserProf = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     var loginID = req.params.id;
     const previousData = await RegisterData.findOne({
@@ -130,7 +131,7 @@ exports.updateUserProf = async (req, res) => {
       { login_id: loginID },
       { $set: User }
     );
-    console.log('Data', Data);
+    // console.log('Data', Data);
 
     if (Data) {
       return res.status(200).json({
@@ -255,7 +256,7 @@ exports.setPrimaryAddress = async (req, res) => {
 exports.getUserAddress = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
+    // console.log(id);
     const userAddress = await addressData.find({ login_id: id });
     if (userAddress) {
       res.status(200).json({
@@ -320,7 +321,7 @@ exports.updateUserAddress = async (req, res) => {
     const prevUserAddress = await addressData.findOne({
       _id: id,
     });
-    console.log(prevUserAddress);
+    // console.log(prevUserAddress);
 
     var updatedAddress = {
       login_id: prevUserAddress.login_id,
@@ -373,7 +374,7 @@ exports.updateUserAddress = async (req, res) => {
 exports.deleteUserAddress = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
+    // console.log(id);
     const userAddress = await addressData.deleteOne({ _id: id });
     if (userAddress) {
       res.status(200).json({
@@ -518,7 +519,7 @@ exports.filterProducts = async (req, res) => {
 exports.filterSubProducts = async (req, res) => {
   try {
     const sub_category = req.params.subcategory;
-    console.log(sub_category);
+    // console.log(sub_category);
     // const Data = await productsData.find();
     const Data = await productsData.find({ sub_category: sub_category });
     if (Data.length > 0) {
@@ -548,7 +549,7 @@ exports.filterSubProducts = async (req, res) => {
 exports.filterCatSubProducts = async (req, res) => {
   try {
     const category = req.params.category;
-    console.log(category);
+    // console.log(category);
     // const Data = await productsData.find();
     // const Data = await productsData.find({ category_id: category });
     const Data = await productsData.distinct('sub_category', {
@@ -582,8 +583,8 @@ exports.filterPriceProducts = async (req, res) => {
   try {
     const start_range = req.params.start;
     const end_range = req.params.end;
-    console.log(start_range);
-    console.log(start_range);
+    // console.log(start_range);
+    // console.log(start_range);
     // const Data = await productsData.find();
     const Data = await productsData.find({
       price: { $gte: start_range, $lte: end_range },
@@ -614,7 +615,7 @@ exports.filterPriceProducts = async (req, res) => {
 exports.searchProducts = async (req, res) => {
   try {
     const searchKey = req.params.searchKey;
-    console.log(searchKey);
+    // console.log(searchKey);
     // const Data = await productsData.find();
     const Data = await productsData.find({
       // product_name: { searchKey },
@@ -741,7 +742,7 @@ exports.addToCart = async (req, res) => {
 exports.viewCart = async (req, res) => {
   try {
     const user_id = req.params.user_id;
-    console.log(user_id);
+    // console.log(user_id);
 
     const cartProducts = await cartData.aggregate([
       {
@@ -887,9 +888,9 @@ exports.decrementQuantity = async (req, res) => {
     .then((data) => {
       const quantity = data.quantity;
       const updatedQuantity = quantity - 1;
-      console.log('updatedquantity', updatedQuantity);
+      // console.log('updatedquantity', updatedQuantity);
       if (updatedQuantity == 0) {
-        console.log('quantity is zero');
+        // console.log('quantity is zero');
         cartData
           .deleteOne({ _id: req.params.id })
           .then(() => {
@@ -998,7 +999,7 @@ exports.addToWishlist = async (req, res) => {
 exports.viewWishlist = async (req, res) => {
   try {
     const user_id = req.params.user_id;
-    console.log(user_id);
+    // console.log(user_id);
 
     const wishlistProducts = await wishlistData.aggregate([
       {
@@ -1125,12 +1126,17 @@ exports.checkOut = async (req, res) => {
 
     await checkoutData.insertMany(dataWithOrderStatus);
     // await cartData.deleteMany({ login_id: req.params.user_id });
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Checkout data added successfully!',
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    // console.error(error);
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
   }
 };
 
@@ -1138,7 +1144,7 @@ exports.checkOut = async (req, res) => {
 exports.viewCheckout = async (req, res) => {
   try {
     const user_id = req.params.user_id;
-    console.log(user_id);
+    // console.log(user_id);
 
     const checkoutProducts = await checkoutData.aggregate([
       {
@@ -1288,7 +1294,12 @@ exports.updateOrderStatus = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({
+      success: false,
+      error: true,
+      message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
   }
 };
 
@@ -1297,7 +1308,7 @@ exports.updateOrderStatus = async (req, res) => {
 exports.viewOrders = async (req, res) => {
   try {
     const user_id = req.params.user_id;
-    console.log(user_id);
+    // console.log(user_id);
 
     const Orders = await orderData.aggregate([
       {
@@ -1382,3 +1393,189 @@ exports.viewOrders = async (req, res) => {
     });
   }
 };
+
+// -------------------------- User orders filter by completed --------------------------------------------
+exports.filterOrdersCompleted = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    // console.log(user_id);
+
+    const Orders = await orderData.aggregate([
+      {
+        $lookup: {
+          from: 'products_tbs',
+          localField: 'product_id',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $unwind: {
+          path: '$result',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          product_name: {
+            $first: '$result.product_name',
+          },
+          login_id: {
+            $first: '$login_id',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$result.offer',
+          },
+          description: {
+            $first: '$result.description',
+          },
+          price: {
+            $first: '$result.price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$result.image', null],
+                },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          login_id: new mongoose.Types.ObjectId(user_id),
+          order_status: 'completed',
+        },
+      },
+    ]);
+
+    if (Orders) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        dataCount: Orders.length,
+        data: Orders.length > 0 ? Orders : [],
+        Message: 'Completed orders fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Completed orders fetching failed',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+// -------------------------- User orders filter by cancelled --------------------------------------------
+exports.filterOrdersCancelled = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+    // console.log(user_id);
+
+    const Orders = await orderData.aggregate([
+      {
+        $lookup: {
+          from: 'products_tbs',
+          localField: 'product_id',
+          foreignField: '_id',
+          as: 'result',
+        },
+      },
+      {
+        $unwind: {
+          path: '$result',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          product_name: {
+            $first: '$result.product_name',
+          },
+          login_id: {
+            $first: '$login_id',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$result.offer',
+          },
+          description: {
+            $first: '$result.description',
+          },
+          price: {
+            $first: '$result.price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$result.image', null],
+                },
+                then: '$result.image',
+                else: 'default_image_url',
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          login_id: new mongoose.Types.ObjectId(user_id),
+          order_status: 'cancelled',
+        },
+      },
+    ]);
+
+    if (Orders.length) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        dataCount: Orders.length,
+        data: Orders.length > 0 ? Orders : [],
+        Message: 'Cancelled orders fetched successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Cancelled orders fetching failed',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      Success: false,
+      Error: true,
+      Message: 'Internal server error',
+      ErrorMessage: error.message,
+    });
+  }
+};
+

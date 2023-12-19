@@ -623,7 +623,8 @@ exports.addAdCredit = async (req, res) => {
   try {
     const banner_id = req.params.banner_id;
     const login_id = req.params.login_id;
-
+    
+    // to access credit point data
     const objectId = '655f00abb09f06cc2d5b7aaf';
     const credit_Data = await creditPointData.findOne({ _id: objectId });
     const price_per_credit_point = credit_Data.price_per_credit_point;
