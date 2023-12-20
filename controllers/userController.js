@@ -687,7 +687,6 @@ exports.addToCart = async (req, res) => {
 
     const existingProduct = await cartData.findOne({
       product_id: productId,
-
       login_id: login_id,
     });
     if (existingProduct) {

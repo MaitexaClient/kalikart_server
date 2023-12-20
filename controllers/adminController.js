@@ -7,6 +7,7 @@ const { getVideoDurationInSeconds } = require('get-video-duration');
 const shopRegisterData = require('../models/shopRegisterSchema');
 const RegisterData = require('../models/registerSchema');
 const creditPointData = require('../models/creditPointSchema');
+const watchedAdData = require('../models/watchedAds');
 
 // ============================ CITY===========================
 // --------------------------Add city ----------------------------------
@@ -623,58 +624,77 @@ exports.addAdCredit = async (req, res) => {
   try {
     const banner_id = req.params.banner_id;
     const login_id = req.params.login_id;
-    
-    // to access credit point data
-    const objectId = '655f00abb09f06cc2d5b7aaf';
-    const credit_Data = await creditPointData.findOne({ _id: objectId });
-    const price_per_credit_point = credit_Data.price_per_credit_point;
-    // console.log('Priceperpoint:' + price_per_credit_point);
+    const currentDate = new Date();
 
-    const banner_Data = await bannerData.findOne({ _id: banner_id });
-    const videoLength = banner_Data.videoLength;
-
-    let creditPoint;
-    if (videoLength <= 30) {
-      creditPoint = 10;
-    }
-    if (videoLength > 30) {
-      creditPoint = 20;
-    }
-    // console.log('Video_CreditPoint:' + creditPoint);
-    const existingUserCreditPrice = await RegisterData.findOne({
+    const watchedAd = await watchedAdData.findOne({
       login_id: login_id,
+      banner_id: banner_id,
     });
-    const userCreditPrice = existingUserCreditPrice.credit_points_price;
-    // console.log('User_Price:' + userCreditPrice);
 
-    const finalCreditPrice =
-      price_per_credit_point * creditPoint + userCreditPrice;
-    // console.log('FinalPrice:' + finalCreditPrice);
-
-    const updatedUserData = await RegisterData.updateOne(
-      { login_id: login_id },
-      // { $set: { credit_points: creditPoint } }
-      { $inc: { credit_points: creditPoint } }
-    );
-    const updatedUserCreditPrice = await RegisterData.updateOne(
-      { login_id: login_id },
-      { $set: { credit_points_price: finalCreditPrice } }
-    );
-    if (updatedUserData && updatedUserCreditPrice) {
-      return res.status(200).json({
-        Success: true,
-        Error: false,
-        VideoLength: videoLength,
-        CreditPoints: creditPoint,
-        creditPrice: finalCreditPrice,
-        Message: 'User ad credit point added successfully',
+    if (watchedAd.length>0) {
+      res.status(304).json({
+        Message: 'Already watched this ad today',
       });
     } else {
-      return res.status(400).json({
-        Success: false,
-        Error: true,
-        Message: 'Failed adding credit point ',
+      const adWatchData = {
+        login_id: login_id,
+        banner_id: banner_id,
+        watchDate: currentDate,
+      };
+      await watchedAdData(adWatchData).save();
+
+      // to access credit point data
+      const objectId = '655f00abb09f06cc2d5b7aaf';
+      const credit_Data = await creditPointData.findOne({ _id: objectId });
+      const price_per_credit_point = credit_Data.price_per_credit_point;
+      // console.log('Priceperpoint:' + price_per_credit_point);
+
+      const banner_Data = await bannerData.findOne({ _id: banner_id });
+      const videoLength = banner_Data.videoLength;
+
+      let creditPoint;
+      if (videoLength <= 30) {
+        creditPoint = 10;
+      }
+      if (videoLength > 30) {
+        creditPoint = 20;
+      }
+      // console.log('Video_CreditPoint:' + creditPoint);
+      const existingUserCreditPrice = await RegisterData.findOne({
+        login_id: login_id,
       });
+      const userCreditPrice = existingUserCreditPrice.credit_points_price;
+      // console.log('User_Price:' + userCreditPrice);
+
+      const finalCreditPrice =
+        price_per_credit_point * creditPoint + userCreditPrice;
+      // console.log('FinalPrice:' + finalCreditPrice);
+
+      const updatedUserData = await RegisterData.updateOne(
+        { login_id: login_id },
+        // { $set: { credit_points: creditPoint } }
+        { $inc: { credit_points: creditPoint } }
+      );
+      const updatedUserCreditPrice = await RegisterData.updateOne(
+        { login_id: login_id },
+        { $set: { credit_points_price: finalCreditPrice } }
+      );
+      if (updatedUserData && updatedUserCreditPrice) {
+        return res.status(200).json({
+          Success: true,
+          Error: false,
+          VideoLength: videoLength,
+          CreditPoints: creditPoint,
+          creditPrice: finalCreditPrice,
+          Message: 'User ad credit point added successfully',
+        });
+      } else {
+        return res.status(400).json({
+          Success: false,
+          Error: true,
+          Message: 'Failed adding credit point ',
+        });
+      }
     }
   } catch (error) {
     // console.log(error);

@@ -10,7 +10,11 @@ const watchedAdSchema = new mongoose.Schema({
     ref: 'banner_tb',
     required: true,
   },
+  watchDate:{
+    type:Date,
+    required:true
+  }
 });
 
-var watchedAdData = mongoose.model('checkout_tb', watchedAdSchema);
+var watchedAdData = mongoose.model('watchedAd_tb', watchedAdSchema);
 module.exports = watchedAdData;
