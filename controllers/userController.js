@@ -5,8 +5,8 @@ const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 const orderData = require('../models/ordersSchema');
-// const checkoutData = require('../models/checkOutSchema');
-const checkoutData = require('../models/checkoutSchema');
+const checkoutData = require('../models/checkOutSchema');
+// const checkoutData = require('../models/checkoutSchema');
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -1577,4 +1577,3 @@ exports.filterOrdersCancelled = async (req, res) => {
     });
   }
 };
-

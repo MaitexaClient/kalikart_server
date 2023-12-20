@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const checkoutSchema = new mongoose.Schema({
+const checkOutSchema = new mongoose.Schema({
   login_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'login_tb',
@@ -23,5 +23,5 @@ const checkoutSchema = new mongoose.Schema({
   order_status: { type: String, default: 'pending', require: true },
 });
 
-var checkoutData = mongoose.model('checkout_tb', checkoutSchema);
+var checkoutData = mongoose.model('checkout_tb', checkOutSchema);
 module.exports = checkoutData;
