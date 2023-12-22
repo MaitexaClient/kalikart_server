@@ -5,7 +5,7 @@ const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 const orderData = require('../models/ordersSchema');
-const checkoutData = require('../models/checkoutSchema');
+const checkoutData = require('../models/checkOutSchema');
 // const checkoutData = require('../models/checkoutSchema');
 
 function shuffleArray(array) {
@@ -221,15 +221,14 @@ exports.setPrimaryAddress = async (req, res) => {
     );
     const setPrimary = await addressData.findOneAndUpdate(
       { login_id: req.params.id, addressCount: parseInt(req.params.count) },
-      { $set: { addressType: 'primary' } },
+      { $set: { addressType: 'primary' } }
       // { new: true }
     );
-    
+
     // const unsetPrimary = await addressData.updateOne(
     //   { login_id: req.params.id, addressType: 'primary' },
     //   { $unset: { addressType: '' } }
     // );
-    console.log(setPrimary);
     if (setPrimary && unsetPrimary) {
       return res.status(201).json({
         Success: true,
