@@ -8,7 +8,7 @@ const shopRegisterData = require('../models/shopRegisterSchema');
 const RegisterData = require('../models/registerSchema');
 const creditPointData = require('../models/creditPointSchema');
 const watchedAdData = require('../models/watchedAds');
-
+const moment = require('moment');
 // ============================ CITY===========================
 // --------------------------Add city ----------------------------------
 
@@ -631,8 +631,8 @@ exports.addAdCredit = async (req, res) => {
       banner_id: banner_id,
     });
 
-    if (watchedAd.length>0) {
-      res.status(304).json({
+    if (watchedAd) {
+      return res.status(200).json({
         Message: 'Already watched this ad today',
       });
     } else {

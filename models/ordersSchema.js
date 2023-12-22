@@ -10,6 +10,11 @@ const orderSchema = new mongoose.Schema({
     ref: 'products_tb',
     required: true,
   },
+  address_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'address_tb',
+    require: true,
+  },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
   subtotal: {

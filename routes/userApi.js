@@ -73,7 +73,7 @@ router.delete(
 );
 router.post('/add-orders/:user_id', userController.checkOut);
 router.post(
-  '/update-orders-status/:user_id/:status',
+  '/update-orders-status/:user_id/:address_id/:status',
   userController.updateOrderStatus
 );
 router.get('/view-checkout/:user_id', userController.viewCheckout);

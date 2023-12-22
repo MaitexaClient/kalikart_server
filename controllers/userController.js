@@ -5,7 +5,7 @@ const wishlistData = require('../models/wishlistSchema');
 const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 const orderData = require('../models/ordersSchema');
-const checkoutData = require('../models/checkOutSchema');
+const checkoutData = require('../models/checkoutSchema');
 // const checkoutData = require('../models/checkoutSchema');
 
 function shuffleArray(array) {
@@ -215,20 +215,21 @@ exports.addAddress = async (req, res) => {
 // );
 exports.setPrimaryAddress = async (req, res) => {
   try {
-    const setPrimary = await addressData.findOneAndUpdate(
-      { login_id: req.params.id, addressCount: parseInt(req.params.count) },
-      { $set: { addressType: 'primary' } }
-      // { new: true }
-    );
     const unsetPrimary = await addressData.updateOne(
       { login_id: req.params.id, addressType: 'primary' },
       { $set: { addressType: '' } }
     );
+    const setPrimary = await addressData.findOneAndUpdate(
+      { login_id: req.params.id, addressCount: parseInt(req.params.count) },
+      { $set: { addressType: 'primary' } },
+      // { new: true }
+    );
+    
     // const unsetPrimary = await addressData.updateOne(
     //   { login_id: req.params.id, addressType: 'primary' },
     //   { $unset: { addressType: '' } }
     // );
-
+    console.log(setPrimary);
     if (setPrimary && unsetPrimary) {
       return res.status(201).json({
         Success: true,
@@ -1237,18 +1238,22 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     // console.log(req.params.status);
     // console.log(typeof req.params.status);
+    const addr_id = req.params.address_id;
+    console.log('address', addr_id);
     const currentDate = new Date();
     if (req.params.status === '1') {
+      console.log('test', addr_id);
       await checkoutData.updateMany(
         { login_id: req.params.user_id },
         {
-          $set: { order_status: 'completed', order_date: currentDate },
+          $set: {
+            order_status: 'completed',
+            order_date: currentDate,
+            address_id: addr_id,
+          },
         }
       );
 
-      res
-        .status(200)
-        .json({ message: 'Order status completed updated successfully!' });
       const dataToCopy = await checkoutData.find({
         login_id: req.params.user_id,
       });
@@ -1262,19 +1267,35 @@ exports.updateOrderStatus = async (req, res) => {
         ...item.toObject(),
       }));
 
-      await orderData.insertMany(dataWithOrderStatus);
-      await cartData.deleteMany({ login_id: req.params.user_id });
-      await checkoutData.deleteMany({ login_id: req.params.user_id });
+      const addOrders = await orderData.insertMany(dataWithOrderStatus);
+      const delCart = await cartData.deleteMany({
+        login_id: req.params.user_id,
+      });
+      const delCheckout = await checkoutData.deleteMany({
+        login_id: req.params.user_id,
+      });
+      if (addOrders && delCart && delCheckout) {
+        return res
+          .status(200)
+          .json({ message: 'Order status completed updated successfully!' });
+      }
     } else {
-      await checkoutData.updateMany(
+      const updateOrder = await checkoutData.updateMany(
         { login_id: req.params.user_id },
         {
-          $set: { order_status: 'cancelled', order_date: currentDate },
+          $set: {
+            order_status: 'cancelled',
+            order_date: currentDate,
+            address_id: addr_id,
+          },
         }
       );
-      res
-        .status(200)
-        .json({ message: 'Order status cancelled updated successfully!' });
+      if (updateOrder) {
+        return res
+          .status(200)
+          .json({ message: 'Order status cancelled updated successfully!' });
+      }
+
       const dataToCopy = await checkoutData.find({
         login_id: req.params.user_id,
       });
@@ -1293,7 +1314,7 @@ exports.updateOrderStatus = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: true,
       message: 'Internal server error',
@@ -1326,11 +1347,14 @@ exports.viewOrders = async (req, res) => {
       {
         $group: {
           _id: '$_id',
-          product_name: {
-            $first: '$result.product_name',
-          },
           login_id: {
             $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$result.product_name',
           },
           quantity: {
             $first: '$quantity',
@@ -1360,6 +1384,89 @@ exports.viewOrders = async (req, res) => {
                 else: 'default_image_url',
               },
             },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'address_tbs',
+          localField: 'address_id',
+          foreignField: '_id',
+          as: 'address',
+        },
+      },
+      {
+        $unwind: {
+          path: '$address',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          login_id: {
+            $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$product_name',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$offer',
+          },
+          description: {
+            $first: '$description',
+          },
+          price: {
+            $first: '$price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$image', null],
+                },
+                then: '$image',
+                else: 'default_image_url',
+              },
+            },
+          },
+          name: {
+            $first: '$address.name',
+          },
+          phone: {
+            $first: '$address.phone',
+          },
+          addressCount: {
+            $first: '$address.addressCount',
+          },
+          address: {
+            $first: '$address.address',
+          },
+          pincode: {
+            $first: '$address.pincode',
+          },
+          city: {
+            $first: '$address.city',
+          },
+          state: {
+            $first: '$address.state',
+          },
+          landmark: {
+            $first: '$address.landmark',
+          },
+          addressType: {
+            $first: '$address.addressType',
           },
         },
       },
@@ -1416,11 +1523,14 @@ exports.filterOrdersCompleted = async (req, res) => {
       {
         $group: {
           _id: '$_id',
-          product_name: {
-            $first: '$result.product_name',
-          },
           login_id: {
             $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$result.product_name',
           },
           quantity: {
             $first: '$quantity',
@@ -1450,6 +1560,89 @@ exports.filterOrdersCompleted = async (req, res) => {
                 else: 'default_image_url',
               },
             },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'address_tbs',
+          localField: 'address_id',
+          foreignField: '_id',
+          as: 'address',
+        },
+      },
+      {
+        $unwind: {
+          path: '$address',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          login_id: {
+            $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$product_name',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$offer',
+          },
+          description: {
+            $first: '$description',
+          },
+          price: {
+            $first: '$price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$image', null],
+                },
+                then: '$image',
+                else: 'default_image_url',
+              },
+            },
+          },
+          name: {
+            $first: '$address.name',
+          },
+          phone: {
+            $first: '$address.phone',
+          },
+          addressCount: {
+            $first: '$address.addressCount',
+          },
+          address: {
+            $first: '$address.address',
+          },
+          pincode: {
+            $first: '$address.pincode',
+          },
+          city: {
+            $first: '$address.city',
+          },
+          state: {
+            $first: '$address.state',
+          },
+          landmark: {
+            $first: '$address.landmark',
+          },
+          addressType: {
+            $first: '$address.addressType',
           },
         },
       },
@@ -1485,6 +1678,7 @@ exports.filterOrdersCompleted = async (req, res) => {
     });
   }
 };
+
 // -------------------------- User orders filter by cancelled --------------------------------------------
 exports.filterOrdersCancelled = async (req, res) => {
   try {
@@ -1508,11 +1702,14 @@ exports.filterOrdersCancelled = async (req, res) => {
       {
         $group: {
           _id: '$_id',
-          product_name: {
-            $first: '$result.product_name',
-          },
           login_id: {
             $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$result.product_name',
           },
           quantity: {
             $first: '$quantity',
@@ -1546,6 +1743,89 @@ exports.filterOrdersCancelled = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: 'address_tbs',
+          localField: 'address_id',
+          foreignField: '_id',
+          as: 'address',
+        },
+      },
+      {
+        $unwind: {
+          path: '$address',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          login_id: {
+            $first: '$login_id',
+          },
+          address_id: {
+            $first: '$address_id',
+          },
+          product_name: {
+            $first: '$product_name',
+          },
+          quantity: {
+            $first: '$quantity',
+          },
+          subtotal: {
+            $first: '$subtotal',
+          },
+          offer: {
+            $first: '$offer',
+          },
+          description: {
+            $first: '$description',
+          },
+          price: {
+            $first: '$price',
+          },
+          order_status: {
+            $first: '$order_status',
+          },
+          image: {
+            $first: {
+              $cond: {
+                if: {
+                  $ne: ['$image', null],
+                },
+                then: '$image',
+                else: 'default_image_url',
+              },
+            },
+          },
+          name: {
+            $first: '$address.name',
+          },
+          phone: {
+            $first: '$address.phone',
+          },
+          addressCount: {
+            $first: '$address.addressCount',
+          },
+          address: {
+            $first: '$address.address',
+          },
+          pincode: {
+            $first: '$address.pincode',
+          },
+          city: {
+            $first: '$address.city',
+          },
+          state: {
+            $first: '$address.state',
+          },
+          landmark: {
+            $first: '$address.landmark',
+          },
+          addressType: {
+            $first: '$address.addressType',
+          },
+        },
+      },
+      {
         $match: {
           login_id: new mongoose.Types.ObjectId(user_id),
           order_status: 'cancelled',
@@ -1553,7 +1833,7 @@ exports.filterOrdersCancelled = async (req, res) => {
       },
     ]);
 
-    if (Orders.length) {
+    if (Orders) {
       return res.status(200).json({
         Success: true,
         Error: false,
