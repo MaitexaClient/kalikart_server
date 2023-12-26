@@ -33,12 +33,7 @@ exports.addCity = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get all city  ----------------------------------
@@ -61,12 +56,7 @@ exports.viewCity = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 // --------------------------Get single city  ----------------------------------
@@ -89,12 +79,7 @@ exports.viewSingleCity = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server Error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
@@ -125,12 +110,7 @@ exports.addCategory = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 // --------------------------get all category----------------------------------
@@ -153,12 +133,7 @@ exports.viewCategory = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 // --------------------------get single category----------------------------------
@@ -181,12 +156,7 @@ exports.viewSingleCategory = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 
@@ -210,12 +180,7 @@ exports.viewShops = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+  next(error);
   }
 };
 
@@ -271,13 +236,8 @@ exports.addBannerImage = async (req, res) => {
       Message: 'Banner added successfully',
     });
   } catch (error) {
-    console.error('Error adding banner:', error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    // console.error('Error adding banner:', error);
+   next(error);
   }
 };
 // --------------------------Add Banner video----------------------------------
@@ -354,13 +314,8 @@ exports.addBannerVideo = async (req, res) => {
       }
     }
   } catch (error) {
-    console.error('Error adding banner:', error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    // console.error('Error adding banner:', error);
+   next(error);
   }
 };
 // --------------------------Add thumbnail for video banner----------------------------------
@@ -407,12 +362,7 @@ exports.addBannerVideoThumbnail = async (req, res) => {
     }
   } catch (error) {
     // console.log(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
@@ -436,12 +386,7 @@ exports.viewBanners = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
@@ -466,12 +411,7 @@ exports.viewVideoBanners = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
@@ -496,12 +436,7 @@ exports.viewImageBanners = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+  next(error);
   }
 };
 // ----------------------------Add Ad Credit point and price------------------------------------------
@@ -532,12 +467,7 @@ exports.addCreditPointDetails = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // ----------------------------View Ad Credit point and price------------------------------------------
@@ -559,12 +489,7 @@ exports.viewCreditPointDetails = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 // ----------------------------Update Ad Credit point and price------------------------------------------
@@ -610,12 +535,7 @@ exports.updateCreditPointDetails = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      Error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -698,11 +618,6 @@ exports.addAdCredit = async (req, res) => {
     }
   } catch (error) {
     // console.log(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };

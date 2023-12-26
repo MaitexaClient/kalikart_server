@@ -86,12 +86,13 @@ exports.shopProfile = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Something went wrong',
-      ErrorMessage: error.message, // Display the error message
-    });
+    // return res.status(400).json({
+    //   Success: false,
+    //   Error: true,
+    //   Message: 'Something went wrong',
+    //   ErrorMessage: error.message, // Display the error message
+    // });
+  next(error);
   }
 };
 
@@ -137,12 +138,7 @@ exports.updateShopProf = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: ERROR.message,
-    });
+   next(error);
   }
 };
 // --------------------------Add product--------------------------------
@@ -179,12 +175,7 @@ exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Failed adding Product ',
-      ErrorMessage: error.message,
-    });
+   next(error);
   }
 };
 
@@ -232,11 +223,7 @@ exports.updateProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Something went wrong',
-    });
+   next(error);
   }
 };
 
@@ -260,11 +247,6 @@ exports.deleteProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      errorMessage: error,
-      Message: 'Something went wrong',
-    });
+  next(error);
   }
 };

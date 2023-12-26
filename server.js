@@ -7,6 +7,7 @@ const adminApi = require('./routes/adminApi');
 const shopsApi = require('./routes/shopsApi');
 const userApi = require('./routes/userApi');
 const watchedAdData = require('./models/watchedAds');
+const ErrorHandler  = require('./middlewares/ErrorHandler');
 
 require('dotenv').config();
 
@@ -30,6 +31,7 @@ app.use('/api', commonApi);
 app.use('/api', adminApi);
 app.use('/api', shopsApi);
 app.use('/api', userApi);
+app.use(ErrorHandler)
 
 app.get('/', (req, res) => {
   res.send('server working');

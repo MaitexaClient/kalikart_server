@@ -64,11 +64,6 @@ exports.login = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      ErrorMessage: error,
-      Message: 'Internal Server Error',
-    });
+    next(error);
   }
 };

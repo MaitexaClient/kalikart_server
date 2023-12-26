@@ -64,12 +64,8 @@ exports.register = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server Error',
-    });
+    // console.error(error);
+   next(error);
   }
 };
 
@@ -153,10 +149,6 @@ exports.shopRegister = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server Error',
-    });
+   next(error);
   }
 };

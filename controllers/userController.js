@@ -17,7 +17,7 @@ function shuffleArray(array) {
 }
 
 // --------------------------User profile-----------------------------------------
-exports.userProfile = async (req, res) => {
+exports.userProfile = async (req, res, next) => {
   //   console.log(req.params.id);
   try {
     const id = req.params.id;
@@ -98,18 +98,13 @@ exports.userProfile = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Something went wrong',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // --------------------------Update user profile----------------------------------
 
-exports.updateUserProf = async (req, res) => {
+exports.updateUserProf = async (req, res, next) => {
   // console.log(req.body);
   try {
     var loginID = req.params.id;
@@ -148,18 +143,13 @@ exports.updateUserProf = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      Error: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User address ---------------------------------------
 // --------------------------add new address user---------------------------------
-exports.addAddress = async (req, res) => {
+exports.addAddress = async (req, res, next) => {
   try {
     // const exAddress = await addressData.findOne({ login_id: req.params.id });
     const exAddress = await addressData
@@ -195,12 +185,7 @@ exports.addAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Failed adding Product ',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------set primary address user------------------------------
@@ -213,7 +198,7 @@ exports.addAddress = async (req, res) => {
 //   { $set: { addressType: 'primary' } },
 //   { new: true }
 // );
-exports.setPrimaryAddress = async (req, res) => {
+exports.setPrimaryAddress = async (req, res, next) => {
   try {
     const unsetPrimary = await addressData.updateOne(
       { login_id: req.params.id, addressType: 'primary' },
@@ -244,16 +229,11 @@ exports.setPrimaryAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------get user address--------------------------------------
-exports.getUserAddress = async (req, res) => {
+exports.getUserAddress = async (req, res, next) => {
   try {
     const id = req.params.id;
     // console.log(id);
@@ -273,17 +253,12 @@ exports.getUserAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: true,
-      message: 'internal server error',
-      errorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------get user primary address-------------------------------
 
-exports.getUserPrimaryAddress = async (req, res) => {
+exports.getUserPrimaryAddress = async (req, res, next) => {
   try {
     const id = req.params.id;
     const userAddress = await addressData.findOne({
@@ -305,16 +280,11 @@ exports.getUserPrimaryAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: true,
-      message: 'internal server error',
-      errorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------update user address-------------------------------------
-exports.updateUserAddress = async (req, res) => {
+exports.updateUserAddress = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -360,18 +330,13 @@ exports.updateUserAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: true,
-      message: 'internal server error',
-      errorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // --------------------------delete user address--------------------------------------
 
-exports.deleteUserAddress = async (req, res) => {
+exports.deleteUserAddress = async (req, res, next) => {
   try {
     const id = req.params.id;
     // console.log(id);
@@ -391,18 +356,13 @@ exports.deleteUserAddress = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: true,
-      message: 'internal server error',
-      errorMessage: error.message,
-    });
+    next(error);
   }
 };
 // ------------------------------ Product --------------------------------------------
 // ----------------------------Get all product----------------------------------------
 
-exports.viewProducts = async (req, res) => {
+exports.viewProducts = async (req, res, next) => {
   try {
     const Data = await productsData.find();
     if (Data) {
@@ -419,11 +379,13 @@ exports.viewProducts = async (req, res) => {
         Message: 'Failed getting Products ',
       });
     }
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 // --------------------------Get shuffled products-----------------------------------
-exports.viewShuffledProducts = async (req, res) => {
+exports.viewShuffledProducts = async (req, res, next) => {
   try {
     const data = await productsData.find();
 
@@ -444,16 +406,12 @@ exports.viewShuffledProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server Error',
-    });
+    // console.error(error);
+    next(error);
   }
 };
 // --------------------------Get trending products-----------------------------------
-exports.viewTrendingProducts = async (req, res) => {
+exports.viewTrendingProducts = async (req, res, next) => {
   try {
     const data = await productsData.find();
 
@@ -478,16 +436,11 @@ exports.viewTrendingProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal Server Error',
-    });
+    next(error);
   }
 };
 // --------------------------Get filtered product by category------------------------
-exports.filterProducts = async (req, res) => {
+exports.filterProducts = async (req, res, next) => {
   try {
     const id = req.params.id;
     // const Data = await productsData.find();
@@ -507,16 +460,11 @@ exports.filterProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get filtered product by sub category--------------------
-exports.filterSubProducts = async (req, res) => {
+exports.filterSubProducts = async (req, res, next) => {
   try {
     const sub_category = req.params.subcategory;
     // console.log(sub_category);
@@ -537,16 +485,11 @@ exports.filterSubProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get filtered product by sub category under category-----
-exports.filterCatSubProducts = async (req, res) => {
+exports.filterCatSubProducts = async (req, res, next) => {
   try {
     const category = req.params.category;
     // console.log(category);
@@ -570,16 +513,11 @@ exports.filterCatSubProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get filtered product by price range---------------------
-exports.filterPriceProducts = async (req, res) => {
+exports.filterPriceProducts = async (req, res, next) => {
   try {
     const start_range = req.params.start;
     const end_range = req.params.end;
@@ -603,16 +541,11 @@ exports.filterPriceProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get filtered product by search key----------------------
-exports.searchProducts = async (req, res) => {
+exports.searchProducts = async (req, res, next) => {
   try {
     const searchKey = req.params.searchKey;
     // console.log(searchKey);
@@ -640,17 +573,12 @@ exports.searchProducts = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // --------------------------Get single product--------------------------------------
 
-exports.viewSingleProduct = async (req, res) => {
+exports.viewSingleProduct = async (req, res, next) => {
   try {
     const Data = await productsData.findOne({ _id: req.params.id });
     if (Data) {
@@ -668,19 +596,14 @@ exports.viewSingleProduct = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({
-      Success: false,
-      Error: true,
-      errorMessage: error,
-      Message: 'Something went wrong',
-    });
+    next(error);
   }
 };
 
 // -------------------------- Cart ---------------------------------------------------
 // -------------------------- Add to cart --------------------------------------------
 
-exports.addToCart = async (req, res) => {
+exports.addToCart = async (req, res, next) => {
   try {
     const login_id = req.params.user_id;
     const productId = req.params.prod_id;
@@ -727,18 +650,13 @@ exports.addToCart = async (req, res) => {
       }
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- Cart view ----------------------------------------------
 
-exports.viewCart = async (req, res) => {
+exports.viewCart = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -840,17 +758,12 @@ exports.viewCart = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- Increment cart quantity  --------------------------------
-exports.incrementQuantity = async (req, res) => {
+exports.incrementQuantity = async (req, res, next) => {
   cartData
     .findOne({
       _id: req.params.id,
@@ -878,7 +791,7 @@ exports.incrementQuantity = async (req, res) => {
 
 // -------------------------- Decrement cart quantity  --------------------------------
 
-exports.decrementQuantity = async (req, res) => {
+exports.decrementQuantity = async (req, res, next) => {
   cartData
     .findOne({
       _id: req.params.id,
@@ -916,7 +829,7 @@ exports.decrementQuantity = async (req, res) => {
     .catch((err) => console.log('error while getting data'));
 };
 // -------------------------- Remove from cart ----------------------------------------
-exports.deleteFromCart = async (req, res) => {
+exports.deleteFromCart = async (req, res, next) => {
   try {
     cartData
       .deleteOne({ _id: req.params.id, login_id: req.params.user_id })
@@ -936,17 +849,12 @@ exports.deleteFromCart = async (req, res) => {
         });
       });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: true,
-      message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 // -------------------------- Wishlist ------------------------------------------------
 // -------------------------- Add to wishlist -----------------------------------------
-exports.addToWishlist = async (req, res) => {
+exports.addToWishlist = async (req, res, next) => {
   try {
     const login_id = req.params.user_id;
     const productId = req.params.prod_id;
@@ -984,18 +892,13 @@ exports.addToWishlist = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- View wishlist ------------------------------------------
 
-exports.viewWishlist = async (req, res) => {
+exports.viewWishlist = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -1068,18 +971,13 @@ exports.viewWishlist = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- Remove from wishlist -----------------------------------
 
-exports.deleteFromWishlist = async (req, res) => {
+exports.deleteFromWishlist = async (req, res, next) => {
   try {
     wishlistData
       .deleteOne({ _id: req.params.id, login_id: req.params.user_id })
@@ -1099,17 +997,12 @@ exports.deleteFromWishlist = async (req, res) => {
         });
       });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: true,
-      message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User Checkout ------------------------------------------
-exports.checkOut = async (req, res) => {
+exports.checkOut = async (req, res, next) => {
   try {
     const dataToCopy = await cartData.find({ login_id: req.params.user_id });
     if (dataToCopy.length === 0) {
@@ -1130,17 +1023,12 @@ exports.checkOut = async (req, res) => {
     });
   } catch (error) {
     // console.error(error);
-    res.status(500).json({
-      success: false,
-      error: true,
-      message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User view checkout products ------------------
-exports.viewCheckout = async (req, res) => {
+exports.viewCheckout = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -1223,17 +1111,12 @@ exports.viewCheckout = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User checkout status update completed ------------------
-exports.updateOrderStatus = async (req, res) => {
+exports.updateOrderStatus = async (req, res, next) => {
   try {
     // console.log(req.params.status);
     // console.log(typeof req.params.status);
@@ -1312,19 +1195,14 @@ exports.updateOrderStatus = async (req, res) => {
       await checkoutData.deleteMany({ login_id: req.params.user_id });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: true,
-      message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    // console.error(error);
+    next(error);
   }
 };
 
 // -------------------------- User orders --------------------------------------------
 
-exports.viewOrders = async (req, res) => {
+exports.viewOrders = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -1490,17 +1368,12 @@ exports.viewOrders = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User orders filter by completed --------------------------------------------
-exports.filterOrdersCompleted = async (req, res) => {
+exports.filterOrdersCompleted = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -1669,17 +1542,12 @@ exports.filterOrdersCompleted = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
 
 // -------------------------- User orders filter by cancelled --------------------------------------------
-exports.filterOrdersCancelled = async (req, res) => {
+exports.filterOrdersCancelled = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     // console.log(user_id);
@@ -1848,11 +1716,6 @@ exports.filterOrdersCancelled = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(500).json({
-      Success: false,
-      Error: true,
-      Message: 'Internal server error',
-      ErrorMessage: error.message,
-    });
+    next(error);
   }
 };
