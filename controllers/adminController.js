@@ -12,7 +12,7 @@ const moment = require('moment');
 // ============================ CITY===========================
 // --------------------------Add city ----------------------------------
 
-exports.addCity = async (req, res) => {
+exports.addCity = async (req, res, next) => {
   try {
     const City = {
       city: req.body.city,
@@ -38,7 +38,7 @@ exports.addCity = async (req, res) => {
 };
 // --------------------------Get all city  ----------------------------------
 
-exports.viewCity = async (req, res) => {
+exports.viewCity = async (req, res, next) => {
   try {
     const Data = await citiesData.find();
     if (Data) {
@@ -56,12 +56,12 @@ exports.viewCity = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 // --------------------------Get single city  ----------------------------------
 
-exports.viewSingleCity = async (req, res) => {
+exports.viewSingleCity = async (req, res, next) => {
   try {
     const Data = await citiesData.findOne({ _id: req.params.id });
     if (Data) {
@@ -88,7 +88,7 @@ exports.viewSingleCity = async (req, res) => {
 // ============================Category===========================
 // --------------------------Add category  ----------------------------------
 
-exports.addCategory = async (req, res) => {
+exports.addCategory = async (req, res, next) => {
   try {
     const Category = {
       category: req.body.category,
@@ -110,12 +110,12 @@ exports.addCategory = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 // --------------------------get all category----------------------------------
 
-exports.viewCategory = async (req, res) => {
+exports.viewCategory = async (req, res, next) => {
   try {
     const Data = await productCategoryData.find();
     if (Data) {
@@ -133,12 +133,12 @@ exports.viewCategory = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 // --------------------------get single category----------------------------------
 
-exports.viewSingleCategory = async (req, res) => {
+exports.viewSingleCategory = async (req, res, next) => {
   try {
     const Data = await productCategoryData.findOne({ _id: req.params.id });
     if (Data) {
@@ -156,13 +156,13 @@ exports.viewSingleCategory = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 
 // ============================Shops===========================
 // --------------------------Get all shops----------------------------------
-exports.viewShops = async (req, res) => {
+exports.viewShops = async (req, res, next) => {
   try {
     const Data = await shopRegisterData.find();
     if (Data) {
@@ -180,13 +180,13 @@ exports.viewShops = async (req, res) => {
       });
     }
   } catch (error) {
-  next(error);
+    next(error);
   }
 };
 
 // ============================Banner===========================
 // --------------------------Add Banner image----------------------------------
-exports.addBannerImage = async (req, res) => {
+exports.addBannerImage = async (req, res, next) => {
   // console.log(req.body);
   // console.log(req.files);
 
@@ -237,12 +237,12 @@ exports.addBannerImage = async (req, res) => {
     });
   } catch (error) {
     // console.error('Error adding banner:', error);
-   next(error);
+    next(error);
   }
 };
 // --------------------------Add Banner video----------------------------------
 
-exports.addBannerVideo = async (req, res) => {
+exports.addBannerVideo = async (req, res, next) => {
   // console.log(req.body);
   // console.log(req.files);
   try {
@@ -315,11 +315,11 @@ exports.addBannerVideo = async (req, res) => {
     }
   } catch (error) {
     // console.error('Error adding banner:', error);
-   next(error);
+    next(error);
   }
 };
 // --------------------------Add thumbnail for video banner----------------------------------
-exports.addBannerVideoThumbnail = async (req, res) => {
+exports.addBannerVideoThumbnail = async (req, res, next) => {
   try {
     const bannerId = req.params.id;
     console.log(bannerId);
@@ -368,7 +368,7 @@ exports.addBannerVideoThumbnail = async (req, res) => {
 
 // --------------------------Get all banner----------------------------------
 
-exports.viewBanners = async (req, res) => {
+exports.viewBanners = async (req, res, next) => {
   try {
     const Data = await bannerData.find();
     if (Data) {
@@ -391,7 +391,7 @@ exports.viewBanners = async (req, res) => {
 };
 
 // --------------------------Get Video banner----------------------------------
-exports.viewVideoBanners = async (req, res) => {
+exports.viewVideoBanners = async (req, res, next) => {
   try {
     const Data = await bannerData.find({
       video: { $ne: [], $not: { $size: 0 } },
@@ -416,7 +416,7 @@ exports.viewVideoBanners = async (req, res) => {
 };
 
 // --------------------------Get Image banner----------------------------------
-exports.viewImageBanners = async (req, res) => {
+exports.viewImageBanners = async (req, res, next) => {
   try {
     const Data = await bannerData.find({
       image: { $ne: [], $not: { $size: 0 } },
@@ -436,11 +436,11 @@ exports.viewImageBanners = async (req, res) => {
       });
     }
   } catch (error) {
-  next(error);
+    next(error);
   }
 };
 // ----------------------------Add Ad Credit point and price------------------------------------------
-exports.addCreditPointDetails = async (req, res) => {
+exports.addCreditPointDetails = async (req, res, next) => {
   try {
     const credit_point = req.body.credit_point;
     const price = req.body.price;
@@ -471,7 +471,7 @@ exports.addCreditPointDetails = async (req, res) => {
   }
 };
 // ----------------------------View Ad Credit point and price------------------------------------------
-exports.viewCreditPointDetails = async (req, res) => {
+exports.viewCreditPointDetails = async (req, res, next) => {
   try {
     const Data = await creditPointData.find();
     if (Data) {
@@ -489,11 +489,11 @@ exports.viewCreditPointDetails = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 // ----------------------------Update Ad Credit point and price------------------------------------------
-exports.updateCreditPointDetails = async (req, res) => {
+exports.updateCreditPointDetails = async (req, res, next) => {
   try {
     const objectId = '655f00abb09f06cc2d5b7aaf';
     const previousData = await creditPointData.findOne({
@@ -540,7 +540,7 @@ exports.updateCreditPointDetails = async (req, res) => {
 };
 
 // ----------------------------Add User Ad Credit point------------------------------------------
-exports.addAdCredit = async (req, res) => {
+exports.addAdCredit = async (req, res, next) => {
   try {
     const banner_id = req.params.banner_id;
     const login_id = req.params.login_id;

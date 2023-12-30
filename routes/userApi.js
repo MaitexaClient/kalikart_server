@@ -72,6 +72,7 @@ router.delete(
   userController.deleteFromWishlist
 );
 router.post('/add-orders/:user_id', userController.checkOut);
+router.post('/add-orders-wallet/:user_id/:walletamount', userController.checkOutWallet);
 router.post(
   '/update-orders-status/:user_id/:address_id/:status',
   userController.updateOrderStatus

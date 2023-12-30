@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // LoginRouter.post('/', async (req, res) => {
-exports.login = async (req, res) => {
+exports.login = async (req, res,next) => {
   try {
     console.log(req.body.email);
     console.log(req.body.password);

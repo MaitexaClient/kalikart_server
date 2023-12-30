@@ -1719,3 +1719,20 @@ exports.filterOrdersCancelled = async (req, res, next) => {
     next(error);
   }
 };
+
+// --------------------------------- Checkout Applying wallet   --------------------------------------------
+
+exports.checkOutWallet = async (req, res, next) => {
+  try {
+  //  user_id,walletamount
+
+    const userCheckOutData=await checkoutData.findOne({_id:req.params.id})
+
+    return res.status(200).json({
+      message: 'Checkout data added successfully!',
+    });
+  } catch (error) {
+    // console.error(error);
+    next(error);
+  }
+};

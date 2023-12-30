@@ -5,7 +5,7 @@ const shopRegisterData = require('../models/shopRegisterSchema');
 
 // --------------------------Shops profile--------------------------------
 
-exports.shopProfile = async (req, res) => {
+exports.shopProfile = async (req, res, next) => {
   // console.log(req.params.id);
   try {
     const id = req.params.id;
@@ -92,13 +92,13 @@ exports.shopProfile = async (req, res) => {
     //   Message: 'Something went wrong',
     //   ErrorMessage: error.message, // Display the error message
     // });
-  next(error);
+    next(error);
   }
 };
 
 // --------------------------Update shops profile--------------------------------
 
-exports.updateShopProf = async (req, res) => {
+exports.updateShopProf = async (req, res, next) => {
   try {
     const previousData = await shopRegisterData.findOne({
       login_id: req.params.id,
@@ -138,12 +138,12 @@ exports.updateShopProf = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
-// --------------------------Add product--------------------------------
+// --------------------------Add product-----------------------------------------
 
-exports.addProduct = async (req, res) => {
+exports.addProduct = async (req, res, next) => {
   try {
     const Product = {
       shop_id: req.body.shop_id,
@@ -175,13 +175,14 @@ exports.addProduct = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 
-// --------------------------Update product--------------------------------
-exports.updateProduct = async (req, res) => {
+// --------------------------Update product--------------------------------------
+exports.updateProduct = async (req, res, next) => {
   try {
+    console.log(req.files);
     const previousData = await productsData.findOne({ _id: req.params.id });
 
     var Product = {
@@ -202,7 +203,7 @@ exports.updateProduct = async (req, res) => {
         ? req.files.map((file) => file.path)
         : previousData.image,
     };
-
+    console.log(Product);
     const Data = await productsData.updateOne(
       { _id: req.params.id },
       { $set: Product }
@@ -223,13 +224,13 @@ exports.updateProduct = async (req, res) => {
       });
     }
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 
 // --------------------------Delete product--------------------------------
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   try {
     const Data = await productsData.deleteOne({ _id: req.params.id });
     if (Data) {
@@ -247,6 +248,6 @@ exports.deleteProduct = async (req, res) => {
       });
     }
   } catch (error) {
-  next(error);
+    next(error);
   }
 };

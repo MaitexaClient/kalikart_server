@@ -5,7 +5,7 @@ const loginDB = require('../models/loginSchema');
 const citiesData = require('../models/citiesSchema');
 
 // =====================user registration==================================
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     const oldEmail = await registerDB.findOne({ email: req.body.email });
     if (oldEmail) {
@@ -65,13 +65,13 @@ exports.register = async (req, res) => {
     }
   } catch (error) {
     // console.error(error);
-   next(error);
+    next(error);
   }
 };
 
 // =====================shop registration==================================
 
-exports.shopRegister = async (req, res) => {
+exports.shopRegister = async (req, res, next) => {
   try {
     const oldShopName = await shopsDB.findOne({
       shop_name: req.body.shop_name,
@@ -149,6 +149,6 @@ exports.shopRegister = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-   next(error);
+    next(error);
   }
 };

@@ -49,7 +49,11 @@ router.post(
   shopsController.addProduct
 );
 
-router.put('/update-product/:id', shopsController.updateProduct);
+router.put(
+  '/update-product/:id',
+  upload.array('image', 5),
+  shopsController.updateProduct
+);
 
 router.delete('/delete-product/:id', shopsController.deleteProduct);
 
