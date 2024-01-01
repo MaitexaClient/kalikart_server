@@ -6,6 +6,7 @@ const productsData = require('../models/productSchema');
 const addressData = require('../models/addressSchema');
 const orderData = require('../models/ordersSchema');
 const checkoutData = require('../models/checkOutSchema');
+const creditPointData = require('../models/creditPointSchema');
 // const checkoutData = require('../models/checkoutSchema');
 
 function shuffleArray(array) {
@@ -1114,17 +1115,43 @@ exports.viewCheckout = async (req, res, next) => {
     next(error);
   }
 };
+// -------------------------- User clear checkout products ------------------
+exports.clearCheckout = async (req, res, next) => {
+  try {
+    const user_id = req.params.user_id;
+    // console.log(user_id);
 
+    const clearCheckoutProducts = await checkoutData.deleteMany({
+      login_id: req.params.user_id,
+    });
+    if (clearCheckoutProducts) {
+      return res.status(200).json({
+        Success: true,
+        Error: false,
+        Message: 'Product cleared from checkout successfully',
+      });
+    } else {
+      return res.status(400).json({
+        Success: false,
+        Error: true,
+        Message: 'Product clearing from checkout failed',
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 // -------------------------- User checkout status update completed ------------------
 exports.updateOrderStatus = async (req, res, next) => {
   try {
-    // console.log(req.params.status);
-    // console.log(typeof req.params.status);
+    const balance_wallet_amount = Number(req.body.balance_wallet_amount);
+    const wallet_amount = Number(req.body.wallet_amount);
+    const final_price = Number(req.body.final_price);
+
     const addr_id = req.params.address_id;
-    console.log('address', addr_id);
+
     const currentDate = new Date();
     if (req.params.status === '1') {
-      console.log('test', addr_id);
       await checkoutData.updateMany(
         { login_id: req.params.user_id },
         {
@@ -1132,6 +1159,8 @@ exports.updateOrderStatus = async (req, res, next) => {
             order_status: 'completed',
             order_date: currentDate,
             address_id: addr_id,
+            wallet_amount_used: wallet_amount,
+            razor_pay_amount: final_price,
           },
         }
       );
@@ -1139,6 +1168,26 @@ exports.updateOrderStatus = async (req, res, next) => {
       const dataToCopy = await checkoutData.find({
         login_id: req.params.user_id,
       });
+      // wallet amount
+      if ((final_price && balance_wallet_amount) !== undefined) {
+        const credit_point_data = await creditPointData.findOne({
+          _id: '655f00abb09f06cc2d5b7aaf',
+        });
+        const price_per_credit_point = credit_point_data.price_per_credit_point;
+        console.log('ww', price_per_credit_point);
+
+        const credit_point = balance_wallet_amount / price_per_credit_point;
+        console.log(typeof credit_point, typeof balance_wallet_amount);
+        await RegisterData.updateOne(
+          { login_id: req.params.user_id },
+          {
+            credit_points_price: balance_wallet_amount,
+            credit_points: credit_point,
+          }
+        );
+      }
+      // wallet amount ends
+
       if (dataToCopy.length === 0) {
         return res
           .status(404)
@@ -1156,10 +1205,12 @@ exports.updateOrderStatus = async (req, res, next) => {
       const delCheckout = await checkoutData.deleteMany({
         login_id: req.params.user_id,
       });
-      if (addOrders && delCart && delCheckout) {
-        return res
-          .status(200)
-          .json({ message: 'Order status completed updated successfully!' });
+      if (addOrders) {
+        if (addOrders && delCart && delCheckout) {
+          return res
+            .status(200)
+            .json({ message: 'Order status completed updated successfully!' });
+        }
       }
     } else {
       const updateOrder = await checkoutData.updateMany(
@@ -1172,11 +1223,6 @@ exports.updateOrderStatus = async (req, res, next) => {
           },
         }
       );
-      if (updateOrder) {
-        return res
-          .status(200)
-          .json({ message: 'Order status cancelled updated successfully!' });
-      }
 
       const dataToCopy = await checkoutData.find({
         login_id: req.params.user_id,
@@ -1191,11 +1237,17 @@ exports.updateOrderStatus = async (req, res, next) => {
         ...item.toObject(),
       }));
 
-      await orderData.insertMany(dataWithOrderStatus);
-      await checkoutData.deleteMany({ login_id: req.params.user_id });
+      const orderDetails = await orderData.insertMany(dataWithOrderStatus);
+      const checkOutDatas = await checkoutData.deleteMany({
+        login_id: req.params.user_id,
+      });
+      if (updateOrder && orderDetails && checkOutDatas) {
+        return res
+          .status(200)
+          .json({ message: 'Order status cancelled updated successfully!' });
+      }
     }
   } catch (error) {
-    // console.error(error);
     next(error);
   }
 };
@@ -1721,18 +1773,44 @@ exports.filterOrdersCancelled = async (req, res, next) => {
 };
 
 // --------------------------------- Checkout Applying wallet   --------------------------------------------
-
 exports.checkOutWallet = async (req, res, next) => {
   try {
-  //  user_id,walletamount
+    const price = Number(req.params.price);
+    const wallet_amount = Number(req.params.walletamount);
 
-    const userCheckOutData=await checkoutData.findOne({_id:req.params.id})
+    let finalPrice;
+    let remainingBalance;
+
+    if (price > wallet_amount) {
+      finalPrice = price - wallet_amount;
+      remainingBalance = 0;
+    } else {
+      finalPrice = 0;
+      remainingBalance = wallet_amount - price;
+    }
+
+    console.log(finalPrice);
+    console.log(remainingBalance);
 
     return res.status(200).json({
-      message: 'Checkout data added successfully!',
+      final_price: finalPrice,
+      balance_wallet_amount: remainingBalance,
+      message: 'Wallet amount reduced from total price',
     });
   } catch (error) {
     // console.error(error);
     next(error);
   }
 };
+//======================= test==========================
+// exports.testClear = async (req, res, next) => {
+//   try {
+//     await orderData.deleteMany();
+
+//     return res.status(200).json({
+//       message: 'Success',
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

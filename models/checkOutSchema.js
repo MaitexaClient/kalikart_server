@@ -26,6 +26,8 @@ const checkOutSchema = new mongoose.Schema({
 
   order_date: { type: Date, require: true },
   order_status: { type: String, default: 'pending', require: true },
+  wallet_amount_used: { type: Number, default: 0, require: true },
+  razor_pay_amount: { type: Number, default: 0, require: true },
 });
 
 var checkoutData = mongoose.model('checkout_tb', checkOutSchema);

@@ -72,14 +72,16 @@ router.delete(
   userController.deleteFromWishlist
 );
 router.post('/add-orders/:user_id', userController.checkOut);
-router.post('/add-orders-wallet/:user_id/:walletamount', userController.checkOutWallet);
+router.get('/use-wallet/:price/:walletamount', userController.checkOutWallet);
 router.post(
   '/update-orders-status/:user_id/:address_id/:status',
   userController.updateOrderStatus
 );
 router.get('/view-checkout/:user_id', userController.viewCheckout);
+router.get('/clear-checkout/:user_id', userController.clearCheckout);
 router.get('/view-orders/:user_id', userController.viewOrders);
 router.get('/completed-orders/:user_id', userController.filterOrdersCompleted);
 router.get('/cancelled-orders/:user_id', userController.filterOrdersCancelled);
+// router.get('/testClear', userController.testClear);
 
 module.exports = router;
