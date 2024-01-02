@@ -82,6 +82,7 @@ router.get('/clear-checkout/:user_id', userController.clearCheckout);
 router.get('/view-orders/:user_id', userController.viewOrders);
 router.get('/completed-orders/:user_id', userController.filterOrdersCompleted);
 router.get('/cancelled-orders/:user_id', userController.filterOrdersCancelled);
+router.get('/user-credit-details/:user_id', userController.userCreditDetails);
 // router.get('/testClear', userController.testClear);
 
 module.exports = router;

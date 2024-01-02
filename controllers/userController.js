@@ -1802,6 +1802,32 @@ exports.checkOutWallet = async (req, res, next) => {
     next(error);
   }
 };
+// --------------------------------- User credit point details   --------------------------------------------
+
+exports.userCreditDetails = async (req, res, next) => {
+  try {
+    const userCreditDatas = await RegisterData.findOne({
+      login_id: req.params.user_id,
+    });
+    const user_credit_points = userCreditDatas.credit_points;
+    const user_credit_points_price = userCreditDatas.credit_points_price;
+
+    const data = {
+      user_credit_points: user_credit_points,
+      user_credit_points_price: user_credit_points_price,
+    };
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      data: data,
+      message: 'User credit details fetched successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //======================= test==========================
 // exports.testClear = async (req, res, next) => {
 //   try {
